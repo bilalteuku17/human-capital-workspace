@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#152b46">
+<title>HUMAN CAPITAL WORKSPACE — Virtual Office</title>
+<style>
+:root{--navy:#152b46;--navy2:#203e60;--gold:#e6b85c;--ink:#17283b;--muted:#718096;--bg:#eef2f6;--card:#fff;--line:#dce4ec}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+.app{height:100dvh;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+header{height:62px;flex:none;background:var(--navy);color:white;display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-shadow:0 3px 14px #10243b30;z-index:4}
+.brand{font-weight:800;letter-spacing:.08em;font-size:12px}.subbrand{font-size:10px;color:#b9c9d9;margin-top:3px}.online{font-size:10px;color:#b8f0cf;display:flex;align-items:center;gap:6px}.dot{width:7px;height:7px;background:#43c783;border-radius:50%}
+main{flex:1;min-height:0;display:flex;flex-direction:column;position:relative}
+.scene-wrap{position:relative;flex:1;min-height:220px;background:linear-gradient(160deg,#dce8f0,#f4f6f8 65%,#e7edf2);overflow:hidden}
+#scene{width:100%;height:100%;display:block;touch-action:none;outline:none}
+.hint{position:absolute;left:12px;top:12px;padding:8px 10px;background:#ffffffd9;border:1px solid #ffffff;border-radius:11px;font-size:10px;color:#526477;backdrop-filter:blur(8px);pointer-events:none}
+.scene-actions{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;gap:7px}
+.iconbtn{border:1px solid #d9e2ea;background:#fffffff0;color:var(--navy);width:38px;height:38px;border-radius:12px;font-size:19px;box-shadow:0 3px 10px #19324b18;touch-action:manipulation}
+.legend{position:absolute;left:12px;bottom:12px;background:#ffffffdf;border:1px solid white;border-radius:12px;padding:8px 10px;font-size:10px;color:#596b7e;pointer-events:none}
+.bottom{background:#f8fafc;border-top:1px solid var(--line);padding:10px 12px 12px;max-height:40%;overflow:auto}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:9px}
+.stat{background:white;border:1px solid var(--line);border-radius:12px;padding:9px 10px}.stat strong{display:block;font-size:18px;color:var(--navy)}.stat span{font-size:9px;color:var(--muted)}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin:7px 2px 8px;font-size:12px;font-weight:800;color:var(--navy)}
+.employee-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.emp{background:white;border:1px solid var(--line);border-radius:12px;padding:9px;display:flex;gap:8px;align-items:center;text-align:left;color:inherit;min-width:0;touch-action:manipulation}
+.avatar{width:34px;height:34px;border-radius:10px;background:#eaf0f6;display:grid;place-items:center;font-size:19px;flex:none}
+.emp b{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.emp small{display:block;font-size:9px;color:var(--muted);margin-top:3px}.status{width:6px;height:6px;background:#9aa8b6;border-radius:50%;display:inline-block;margin-right:4px}.status.online{background:#39b878}
+.overlay{position:fixed;inset:0;background:#0d1d2d80;z-index:10;display:none;align-items:flex-end;justify-content:center;padding:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+.overlay.show{display:flex}.sheet{width:min(100%,480px);background:white;border-radius:20px;padding:18px;box-shadow:0 15px 50px #0003;max-height:82dvh;overflow:auto}
+.sheettop{display:flex;justify-content:space-between;align-items:flex-start}.sheet h2{font-size:18px;margin:0 0 4px;color:var(--navy)}.sheet p{font-size:12px;color:#637386;line-height:1.5;margin:6px 0 12px}
+.close{border:0;background:#edf2f6;border-radius:10px;width:32px;height:32px;font-size:18px;color:var(--navy)}
+.pill{display:inline-block;border-radius:20px;background:#edf7f1;color:#268454;padding:5px 9px;font-size:10px;font-weight:700}
+.detailgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.detail{background:#f3f6f9;padding:10px;border-radius:10px}.detail small{display:block;color:#718096;font-size:9px}.detail b{font-size:11px}
+.actionrow{display:flex;gap:8px;margin-top:12px}.action{border:0;border-radius:11px;padding:11px 13px;background:var(--navy);color:white;font-weight:700;font-size:11px;flex:1}.action.secondary{background:#edf2f6;color:var(--navy)}
+.toast{position:fixed;z-index:20;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#172d49;color:white;padding:10px 14px;border-radius:12px;font-size:11px;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}.toast.show{opacity:1}
+@media (orientation:landscape){main{flex-direction:row}.scene-wrap{flex:1.7}.bottom{width:min(36%,340px);max-height:none;border-top:0;border-left:1px solid var(--line);overflow:auto}.employee-list{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.stat{padding:7px}.stat strong{font-size:15px}}
+@media (max-height:520px) and (orientation:landscape){header{height:48px}.bottom{padding:7px}.section-head{margin:3px}.emp{padding:6px}.stats{margin-bottom:4px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div><div class="brand">HUMAN CAPITAL WORKSPACE</div><div class="subbrand">Virtual Office · CEO Workspace</div></div>
+  <div class="online"><span class="dot"></span> PROTOTYPE ONLINE</div>
+</header>
+<main>
+  <section class="scene-wrap">
+    <canvas id="scene" aria-label="Kantor virtual 3D. Ketuk karakter untuk membuka profil."></canvas>
+    <div class="hint">KETUK KARAKTER UNTUK MEMBUKA PROFIL · GESER UNTUK MEMUTAR</div>
+    <div class="scene-actions">
+      <button class="iconbtn" id="zoomIn" aria-label="Perbesar">＋</button>
+      <button class="iconbtn" id="zoomOut" aria-label="Perkecil">−</button>
+      <button class="iconbtn" id="rotate" aria-label="Putar kamera">↻</button>
+      <button class="iconbtn" id="reset" aria-label="Reset kamera">⌂</button>
+    </div>
+    <div class="legend">🟢 Siap menerima tugas &nbsp; · &nbsp; Klik karakter</div>
+  </section>
+  <section class="bottom">
+    <div class="stats">
+      <div class="stat"><strong>08</strong><span>AI EMPLOYEES</span></div>
+      <div class="stat"><strong id="activeCount">00</strong><span>TUGAS AKTIF</span></div>
+      <div class="stat"><strong>CEO</strong><span>BILAL</span></div>
+    </div>
+    <div class="section-head"><span>AI WORKFORCE</span><span style="font-size:9px;color:#7b8a99;font-weight:500">Pilih karyawan</span></div>
+    <div class="employee-list" id="employeeList"></div>
+  </section>
+</main>
+</div>
+<div class="overlay" id="profileOverlay">
+  <div class="sheet">
+    <div class="sheettop"><div><h2 id="profileName">AI Employee</h2><span class="pill">AVAILABLE · PROTOTYPE</span></div><button class="close" id="closeProfile">×</button></div>
+    <p id="profileRole">Profil karyawan virtual</p>
+    <div class="detailgrid">
+      <div class="detail"><small>DEPARTEMEN</small><b id="profileDept">Belum ditetapkan</b></div>
+      <div class="detail"><small>STATUS</small><b>Menunggu penugasan</b></div>
+      <div class="detail"><small>ATASAN</small><b>CEO Bilal</b></div>
+      <div class="detail"><small>RUANG KERJA</small><b id="profileRoom">Main Workspace</b></div>
+    </div>
+    <p>Identitas dan jabatan final akan ditentukan pada tahap desain organisasi. Pada prototype ini, karakter dan interaksi sudah dapat diuji.</p>
+    <div class="actionrow"><button class="action" id="assignTask">Berikan tugas</button><button class="action secondary" id="viewProfile">Lihat profil</button></div>
+  </div>
+</div>
+<div class="toast" id="toast">Prototype interaction aktif</div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+const employees=[
+ {id:1,name:"AI Employee 01",role:"Jabatan akan ditentukan",dept:"Belum ditetapkan",room:"Meja kerja 01",color:0x3d78a8,shirt:0x3978a8,skin:0xe8b995,hair:0x49352c,emoji:"👩🏻‍💼"},
+ {id:2,name:"AI Employee 02",role:"Jabatan akan ditentukan",dept:"Belum ditetapkan",room:"Meja kerja 02",color:0xb46d50,shirt:0xb46d50,skin:0xd9a27d,hair:0x292321,emoji:"👨🏽‍💼"},
+ {id:3,name:"AI Employee 03",role:"Jabatan akan ditentukan",dept:"Belum ditetapkan",room:"Meja kerja 03",color:0x548c75,shirt:0x548c75,skin:0xf0c7a4,hair:0x67452f,emoji:"👩🏼‍💻"},
+ {id:4,name:"AI Employee 04",role:"Jabatan akan ditentukan",dept:"Belum ditetapkan",room:"Meja kerja 04",color:0x8c6eaa,shirt:0x8c6eaa,skin:0xc98e6b,hair:0x251e1b,emoji:"👨🏻‍💻"},
+ {id:5,name:"AI Employee 05",role:"Jabatan akan ditentukan",dept:"Belum ditetapkan",room:"Meja kerja 05",color:0xc18b3f,shirt:0xc18b3f,skin:0xe8b995,hair:0x39291f,emoji:"👩🏽‍💼"},
+ {id:6,name:"AI Employee 06",role:"Jabatan akan ditentukan",dept:"Belum ditetapkan",room:"Meja kerja 06",color:0x527e9c,shirt:0x527e9c,skin:0xd9a27d,hair:0x30231d,emoji:"👨🏾‍💼"},
+ {id:7,name:"AI Employee 07",role:"Jabatan akan ditentukan",dept:"Belum ditetapkan",room:"Meja kerja 07",color:0x9b687c,shirt:0x9b687c,skin:0xf0c7a4,hair:0x5b3c2c,emoji:"👩🏻‍💻"},
+ {id:8,name:"AI Employee 08",role:"Jabatan akan ditentukan",dept:"Belum ditetapkan",room:"Meja kerja 08",color:0x7d8760,shirt:0x7d8760,skin:0xc98e6b,hair:0x241d19,emoji:"👨🏼‍💻"}
+];
+const canvas=document.querySelector('#scene');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xe5edf3);
+const camera=new THREE.PerspectiveCamera(34,1,.1,100);camera.position.set(11,13,15);
+const target=new THREE.Vector3(0,0,0);
+scene.add(new THREE.HemisphereLight(0xffffff,0x8294a5,2.1));
+const sun=new THREE.DirectionalLight(0xffffff,2.1);sun.position.set(8,14,9);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
+const mat=(color,roughness=.82)=>new THREE.MeshStandardMaterial({color,roughness});
+function box(parent,w,h,d,color,x,y,z,opts={}){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(color));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m}
+function cyl(parent,r1,r2,h,color,x,y,z){const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,12),mat(color));m.position.set(x,y,z);m.castShadow=true;parent.add(m);return m}
+const floor=box(scene,12,.35,9,0xd7e0e7,0,-.2,0);floor.receiveShadow=true;
+const base=box(scene,12,.16,9,0xf7f8f8,0,-.02,0);
+const wallMat=mat(0xfafafa);
+box(scene,12,2.6,.18,0xdce5ec,0,1.2,-4.45);
+box(scene,.18,2.6,9,-1, -5.9,1.2,0); // corrected material below
+// Replace invalid dark wall with pale wall
+scene.children[scene.children.length-1].material=mat(0xe4ebf0);
+box(scene,.18,2.6,9,0xe4ebf0,5.9,1.2,0);
+box(scene,2.3,.12,1.5,0x9db4c6,0,.1,-3.4);
+box(scene,2.1,.12,1.35,0xf0f4f6,0,.22,-3.4);
+// CEO office partition and desk
+box(scene,.10,1.25,3.0,0x9eb1c1,-3.8,.6,-2.9);
+box(scene,.10,1.25,2.2,0x9eb1c1,-2.7,.6,-3.9);
+box(scene,1.7,.18,.85,0x795b43,-4.65,.65,-3.35);
+box(scene,.10,.65,.10,0x594632,-5.3,.25,-3.0);box(scene,.10,.65,.10,0x594632,-4.0,.25,-3.0);
+box(scene,.55,.08,.38,0x263b50,-4.6,.82,-3.35);
+cyl(scene,.28,.28,.12,0x34495e,-4.6,.13,-2.35);cyl(scene,.08,.08,.55,0x34495e,-4.6,.43,-2.35);
+// Meeting table
+box(scene,2.5,.18,1.25,0x987654,2.9,.55,-2.85);
+for(let x of [2.0,3.8])for(let z of [-3.5,-2.2]){cyl(scene,.23,.23,.12,0x536d83,x,.25,z);cyl(scene,.06,.06,.45,0x536d83,x,.48,z)}
+// Plants
+function plant(x,z){cyl(scene,.25,.3,.35,0x9b7957,x,.2,z);for(let i=0;i<5;i++){const leaf=new THREE.Mesh(new THREE.ConeGeometry(.13,.65,7),mat(0x5f9875));leaf.position.set(x+(Math.random()-.5)*.28,.68+(Math.random()*.12),z+(Math.random()-.5)*.25);leaf.rotation.z=(Math.random()-.5)*.8;scene.add(leaf)}}
+plant(-5,-3.7);plant(5,-3.7);plant(-5,3.6);plant(5,3.6);
+// Rug
+const rug=box(scene,6,.035,4,0xe9eef2,0,.01,1.5);rug.material=mat(0xe9eef2);
+// desks, monitors, chairs, people
+const people=[];
+function makePerson(emp,x,z){
+ const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
+ const skin=mat(emp.skin),shirt=mat(emp.shirt),dark=mat(emp.hair),pants=mat(0x34465a);
+ const body=new THREE.Mesh(new THREE.CapsuleGeometry(.22,.42,4,8),shirt);body.position.y=.83;body.castShadow=true;g.add(body);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.19,12,10),skin);head.position.y=1.34;head.castShadow=true;g.add(head);
+ const hair=new THREE.Mesh(new THREE.SphereGeometry(.195,12,8,0,Math.PI*2,0,Math.PI*.58),dark);hair.position.y=1.39;g.add(hair);
+ const leg1=box(g,.13,.42,.15,0x34465a,-.12,.28,0);const leg2=box(g,.13,.42,.15,0x34465a,.12,.28,0);
+ const arm1=box(g,.12,.42,.13,emp.shirt,-.28,.9,0);arm1.rotation.z=-.22;const arm2=box(g,.12,.42,.13,emp.shirt,.28,.9,0);arm2.rotation.z=.22;
+ g.userData.employee=emp;g.userData.baseY=0;
+ // subtle selectable ring
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(.38,.025,6,24),mat(emp.color));ring.rotation.x=Math.PI/2;ring.position.y=.04;g.add(ring);
+ // desk
+ box(scene,1.15,.12,.65,0x9b795b,x,.82,z-.65);
+ box(scene,.48,.32,.06,0x34495e,x,.99,z-.75);
+ box(scene,.42,.25,.02,0x8fb3c9,x,1.0,z-.71);
+ for(let dx of [-.48,.48])box(scene,.07,.78,.07,0x725b47,x+dx,.4,z-.65);
+ cyl(scene,.25,.25,.1,0x536d83,x,.22,z+.12);cyl(scene,.06,.06,.5,0x536d83,x,.49,z+.12);
+ people.push(g);
+}
+const positions=[[-3.3,-.2],[-1.1,-.2],[1.1,-.2],[3.3,-.2],[-3.3,2.5],[-1.1,2.5],[1.1,2.5],[3.3,2.5]];
+employees.forEach((e,i)=>makePerson(e,...positions[i]));
+// room labels as small floating boards
+function label(text,x,z,color=0x28445e){const c=document.createElement('canvas');c.width=512;c.height=128;const ctx=c.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,512,128);ctx.fillStyle='#'+color.toString(16).padStart(6,'0');ctx.font='bold 42px Arial';ctx.textAlign='center';ctx.fillText(text,256,82);const tex=new THREE.CanvasTexture(c);const mesh=new THREE.Mesh(new THREE.PlaneGeometry(2.4,.6),new THREE.MeshBasicMaterial({map:tex,transparent:true,side:THREE.DoubleSide}));mesh.position.set(x,2.25,z);scene.add(mesh)}
+label('CEO OFFICE',-4.35,-4.25);label('MEETING ROOM',2.8,-4.25);label('MAIN WORKSPACE',0,4.15);
+const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let selected=null,drag=false,lastX=0,lastY=0,theta=Math.PI/4,phi=1.02,radius=19;
+function updateCamera(){phi=Math.max(.55,Math.min(1.35,phi));camera.position.set(target.x+radius*Math.sin(phi)*Math.sin(theta),target.y+radius*Math.cos(phi),target.z+radius*Math.sin(phi)*Math.cos(theta));camera.lookAt(target)}
+updateCamera();
+function resize(){const r=canvas.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/Math.max(1,r.height);camera.updateProjectionMatrix()}
+new ResizeObserver(resize).observe(canvas);resize();
+function selectAt(clientX,clientY){const rect=canvas.getBoundingClientRect();pointer.x=((clientX-rect.left)/rect.width)*2-1;pointer.y=-((clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(people,true);if(hits.length){let o=hits[0].object;while(o&&!o.userData.employee)o=o.parent;if(o)openProfile(o.userData.employee)}}
+canvas.addEventListener('pointerdown',e=>{drag=false;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointermove',e=>{if(e.buttons){const dx=e.clientX-lastX,dy=e.clientY-lastY;if(Math.abs(dx)+Math.abs(dy)>3)drag=true;theta-=dx*.008;phi+=dy*.006;updateCamera();lastX=e.clientX;lastY=e.clientY}});
+canvas.addEventListener('pointerup',e=>{if(!drag)selectAt(e.clientX,e.clientY)});
+canvas.addEventListener('wheel',e=>{radius=Math.max(11,Math.min(27,radius+e.deltaY*.018));updateCamera()},{passive:true});
+document.querySelector('#zoomIn').onclick=()=>{radius=Math.max(11,radius-1.5);updateCamera()};
+document.querySelector('#zoomOut').onclick=()=>{radius=Math.min(27,radius+1.5);updateCamera()};
+document.querySelector('#rotate').onclick=()=>{theta+=Math.PI/4;updateCamera()};
+document.querySelector('#reset').onclick=()=>{theta=Math.PI/4;phi=1.02;radius=19;updateCamera()};
+function openProfile(emp){selected=emp;document.querySelector('#profileName').textContent=emp.name;document.querySelector('#profileRole').textContent=emp.role;document.querySelector('#profileDept').textContent=emp.dept;document.querySelector('#profileRoom').textContent=emp.room;document.querySelector('#profileOverlay').classList.add('show')}
+document.querySelector('#closeProfile').onclick=()=>document.querySelector('#profileOverlay').classList.remove('show');
+document.querySelector('#profileOverlay').addEventListener('click',e=>{if(e.target.id==='profileOverlay')e.currentTarget.classList.remove('show')});
+document.querySelector('#assignTask').onclick=()=>{document.querySelector('#profileOverlay').classList.remove('show');toast('Form penugasan akan tersedia pada Milestone 3')};
+document.querySelector('#viewProfile').onclick=()=>toast('Profil dasar prototype · Detail jabatan menyusul');
+const list=document.querySelector('#employeeList');
+employees.forEach((e,i)=>{const b=document.createElement('button');b.className='emp';b.innerHTML=`<span class="avatar">${e.emoji}</span><span style="min-width:0"><b>${e.name}</b><small><i class="status online"></i>Available · ${e.room}</small></span>`;b.onclick=()=>openProfile(e);list.appendChild(b)});
+let toastTimer;function toast(t){const el=document.querySelector('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2100)}
+function animate(t){requestAnimationFrame(animate);people.forEach((p,i)=>{p.position.y=Math.sin(t*.0015+i)*.012});renderer.render(scene,camera)}
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>
