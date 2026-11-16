@@ -23,6 +23,7 @@ main{flex:1;min-height:0;display:flex;flex-direction:column;position:relative}
 .stat{background:white;border:1px solid var(--line);border-radius:12px;padding:9px 10px}.stat strong{display:block;font-size:18px;color:var(--navy)}.stat span{font-size:9px;color:var(--muted)}
 .section-head{display:flex;align-items:center;justify-content:space-between;margin:7px 2px 8px;font-size:12px;font-weight:800;color:var(--navy)}
 .employee-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.task-list{display:grid;gap:7px;margin-top:8px}.task-card{background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px}.task-card b{font-size:11px}.task-card p{font-size:10px;color:var(--muted);margin:5px 0}.task-meta{font-size:9px;color:#718096;display:flex;justify-content:space-between;gap:8px}.field{display:grid;gap:5px;margin:10px 0}.field label{font-size:10px;font-weight:700;color:#526477}.field input,.field textarea,.field select{width:100%;border:1px solid #d8e1e9;border-radius:10px;padding:11px;font:inherit;font-size:13px;color:var(--ink);background:#fff}.field textarea{min-height:82px;resize:vertical}.empty{font-size:11px;color:#718096;padding:10px;background:#f3f6f9;border-radius:10px}.employee-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
 .emp{background:white;border:1px solid var(--line);border-radius:12px;padding:9px;display:flex;gap:8px;align-items:center;text-align:left;color:inherit;min-width:0;touch-action:manipulation}
 .avatar{width:34px;height:34px;border-radius:10px;background:#eaf0f6;display:grid;place-items:center;font-size:19px;flex:none}
 .emp b{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.emp small{display:block;font-size:9px;color:var(--muted);margin-top:3px}.status{width:6px;height:6px;background:#9aa8b6;border-radius:50%;display:inline-block;margin-right:4px}.status.online{background:#39b878}
@@ -64,6 +65,8 @@ main{flex:1;min-height:0;display:flex;flex-direction:column;position:relative}
     </div>
     <div class="section-head"><span>AI WORKFORCE</span><span style="font-size:9px;color:#7b8a99;font-weight:500">Pilih karyawan</span></div>
     <div class="employee-list" id="employeeList"></div>
+    <div class="section-head" style="margin-top:14px"><span>DAFTAR PENUGASAN CEO</span><button class="action" id="newTask" style="flex:0;padding:7px 10px">+ Tugas</button></div>
+    <div class="task-list" id="taskList"><div class="empty">Belum ada penugasan.</div></div><div class="employee-list" id="employeeList"></div>
   </section>
 </main>
 </div>
@@ -81,7 +84,20 @@ main{flex:1;min-height:0;display:flex;flex-direction:column;position:relative}
     <div class="actionrow"><button class="action" id="assignTask">Berikan tugas</button><button class="action secondary" id="viewProfile">Lihat profil</button></div>
   </div>
 </div>
-<div class="toast" id="toast">Prototype interaction aktif</div>
+<div class="overlay" id="taskOverlay">
+  <div class="sheet">
+    <div class="sheettop"><div><h2>Buat Penugasan CEO</h2><p>Catat instruksi dan tentukan penerima tugas.</p></div><button class="close" id="closeTask">×</button></div>
+    <form id="taskForm">
+      <div class="field"><label for="taskTitle">Judul tugas *</label><input id="taskTitle" maxlength="100" required placeholder="Contoh: Analisis kebutuhan organisasi"></div>
+      <div class="field"><label for="taskDescription">Instruksi / output yang diharapkan *</label><textarea id="taskDescription" maxlength="2000" required placeholder="Jelaskan konteks, instruksi, dan hasil yang diharapkan..."></textarea></div>
+      <div class="field"><label for="taskAssignee">Ditugaskan kepada *</label><select id="taskAssignee" required><option value="all">Seluruh AI Workforce (8 karyawan)</option></select></div>
+      <div class="field"><label for="taskPriority">Prioritas</label><select id="taskPriority"><option>Normal</option><option>Tinggi</option><option>Urgent</option></select></div>
+      <div class="field"><label for="taskDue">Target selesai (opsional)</label><input id="taskDue" type="date"></div>
+      <div class="actionrow"><button class="action" type="submit">Simpan Penugasan</button><button class="action secondary" type="button" id="cancelTask">Batal</button></div>
+    </form>
+  </div>
+</div>
+<div class="toast" id="toast">Prototype interaction aktif</div><div class="toast" id="toast">Prototype interaction aktif</div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
@@ -175,7 +191,32 @@ document.querySelector('#reset').onclick=()=>{theta=Math.PI/4;phi=1.02;radius=19
 function openProfile(emp){selected=emp;document.querySelector('#profileName').textContent=emp.name;document.querySelector('#profileRole').textContent=emp.role;document.querySelector('#profileDept').textContent=emp.dept;document.querySelector('#profileRoom').textContent=emp.room;document.querySelector('#profileOverlay').classList.add('show')}
 document.querySelector('#closeProfile').onclick=()=>document.querySelector('#profileOverlay').classList.remove('show');
 document.querySelector('#profileOverlay').addEventListener('click',e=>{if(e.target.id==='profileOverlay')e.currentTarget.classList.remove('show')});
-document.querySelector('#assignTask').onclick=()=>{document.querySelector('#profileOverlay').classList.remove('show');toast('Form penugasan akan tersedia pada Milestone 3')};
+const taskOverlay=document.querySelector('#taskOverlay');
+const assigneeSelect=document.querySelector('#taskAssignee');
+employees.forEach(e=>{const o=document.createElement('option');o.value=String(e.id);o.textContent=e.name;assigneeSelect.appendChild(o)});
+let tasks=[];
+try{tasks=JSON.parse(localStorage.getItem('hcw_tasks')||'[]');if(!Array.isArray(tasks))tasks=[]}catch{tasks=[]}
+function saveTasks(){localStorage.setItem('hcw_tasks',JSON.stringify(tasks));renderTasks()}
+function renderTasks(){
+ const list=document.querySelector('#taskList');list.innerHTML='';
+ document.querySelector('#activeCount').textContent=String(tasks.filter(t=>t.status!=='Selesai').length).padStart(2,'0');
+ if(!tasks.length){list.innerHTML='<div class="empty">Belum ada penugasan. Gunakan tombol + Tugas untuk membuat instruksi pertama.</div>';return}
+ [...tasks].reverse().forEach(t=>{const card=document.createElement('div');card.className='task-card';const who=t.assignee==='all'?'Seluruh AI Workforce':employees.find(e=>String(e.id)===t.assignee)?.name||'AI Employee';card.innerHTML='<b></b><p></p><div class="task-meta"><span></span><span></span></div>';card.querySelector('b').textContent=t.title;card.querySelector('p').textContent=t.description;card.querySelectorAll('.task-meta span')[0].textContent=who+' · '+t.priority;card.querySelectorAll('.task-meta span')[1].textContent=t.status;list.appendChild(card)})
+}
+function openTaskForm(assignee='all'){document.querySelector('#profileOverlay').classList.remove('show');document.querySelector('#taskForm').reset();assigneeSelect.value=assignee;taskOverlay.classList.add('show')}
+document.querySelector('#assignTask').onclick=()=>openTaskForm(selected?String(selected.id):'all');
+document.querySelector('#newTask').onclick=()=>openTaskForm('all');
+document.querySelector('#closeTask').onclick=()=>taskOverlay.classList.remove('show');
+document.querySelector('#cancelTask').onclick=()=>taskOverlay.classList.remove('show');
+taskOverlay.addEventListener('click',e=>{if(e.target===taskOverlay)taskOverlay.classList.remove('show')});
+document.querySelector('#taskForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ const title=document.querySelector('#taskTitle').value.trim(),description=document.querySelector('#taskDescription').value.trim();
+ if(!title||!description){toast('Judul dan instruksi wajib diisi');return}
+ tasks.push({id:Date.now(),title,description,assignee:assigneeSelect.value,priority:document.querySelector('#taskPriority').value,due:document.querySelector('#taskDue').value,status:'Tercatat · menunggu sistem AI',createdAt:new Date().toISOString()});
+ saveTasks();taskOverlay.classList.remove('show');toast('Penugasan berhasil disimpan di perangkat ini');
+});
+renderTasks();
 document.querySelector('#viewProfile').onclick=()=>toast('Profil dasar prototype · Detail jabatan menyusul');
 const list=document.querySelector('#employeeList');
 employees.forEach((e,i)=>{const b=document.createElement('button');b.className='emp';b.innerHTML=`<span class="avatar">${e.emoji}</span><span style="min-width:0"><b>${e.name}</b><small><i class="status online"></i>Available · ${e.room}</small></span>`;b.onclick=()=>openProfile(e);list.appendChild(b)});
