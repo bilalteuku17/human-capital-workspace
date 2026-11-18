@@ -1,228 +1,264 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#152b46">
-<title>HUMAN CAPITAL WORKSPACE — Virtual Office</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#091321">
+<title>HUMAN CAPITAL WORKSPACE | CEO Office</title>
 <style>
-:root{--navy:#152b46;--navy2:#203e60;--gold:#e6b85c;--ink:#17283b;--muted:#718096;--bg:#eef2f6;--card:#fff;--line:#dce4ec}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
-.app{height:100dvh;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
-header{height:62px;flex:none;background:var(--navy);color:white;display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-shadow:0 3px 14px #10243b30;z-index:4}
-.brand{font-weight:800;letter-spacing:.08em;font-size:12px}.subbrand{font-size:10px;color:#b9c9d9;margin-top:3px}.online{font-size:10px;color:#b8f0cf;display:flex;align-items:center;gap:6px}.dot{width:7px;height:7px;background:#43c783;border-radius:50%}
-main{flex:1;min-height:0;display:flex;flex-direction:column;position:relative}
-.scene-wrap{position:relative;flex:1;min-height:220px;background:linear-gradient(160deg,#dce8f0,#f4f6f8 65%,#e7edf2);overflow:hidden}
-#scene{width:100%;height:100%;display:block;touch-action:none;outline:none}
-.hint{position:absolute;left:12px;top:12px;padding:8px 10px;background:#ffffffd9;border:1px solid #ffffff;border-radius:11px;font-size:10px;color:#526477;backdrop-filter:blur(8px);pointer-events:none}
-.scene-actions{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;gap:7px}
-.iconbtn{border:1px solid #d9e2ea;background:#fffffff0;color:var(--navy);width:38px;height:38px;border-radius:12px;font-size:19px;box-shadow:0 3px 10px #19324b18;touch-action:manipulation}
-.legend{position:absolute;left:12px;bottom:12px;background:#ffffffdf;border:1px solid white;border-radius:12px;padding:8px 10px;font-size:10px;color:#596b7e;pointer-events:none}
-.bottom{background:#f8fafc;border-top:1px solid var(--line);padding:10px 12px 12px;max-height:40%;overflow:auto}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:9px}
-.stat{background:white;border:1px solid var(--line);border-radius:12px;padding:9px 10px}.stat strong{display:block;font-size:18px;color:var(--navy)}.stat span{font-size:9px;color:var(--muted)}
-.section-head{display:flex;align-items:center;justify-content:space-between;margin:7px 2px 8px;font-size:12px;font-weight:800;color:var(--navy)}
-.employee-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
-.task-list{display:grid;gap:7px;margin-top:8px}.task-card{background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px}.task-card b{font-size:11px}.task-card p{font-size:10px;color:var(--muted);margin:5px 0}.task-meta{font-size:9px;color:#718096;display:flex;justify-content:space-between;gap:8px}.field{display:grid;gap:5px;margin:10px 0}.field label{font-size:10px;font-weight:700;color:#526477}.field input,.field textarea,.field select{width:100%;border:1px solid #d8e1e9;border-radius:10px;padding:11px;font:inherit;font-size:13px;color:var(--ink);background:#fff}.field textarea{min-height:82px;resize:vertical}.empty{font-size:11px;color:#718096;padding:10px;background:#f3f6f9;border-radius:10px}.employee-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
-.emp{background:white;border:1px solid var(--line);border-radius:12px;padding:9px;display:flex;gap:8px;align-items:center;text-align:left;color:inherit;min-width:0;touch-action:manipulation}
-.avatar{width:34px;height:34px;border-radius:10px;background:#eaf0f6;display:grid;place-items:center;font-size:19px;flex:none}
-.emp b{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.emp small{display:block;font-size:9px;color:var(--muted);margin-top:3px}.status{width:6px;height:6px;background:#9aa8b6;border-radius:50%;display:inline-block;margin-right:4px}.status.online{background:#39b878}
-.overlay{position:fixed;inset:0;background:#0d1d2d80;z-index:10;display:none;align-items:flex-end;justify-content:center;padding:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
-.overlay.show{display:flex}.sheet{width:min(100%,480px);background:white;border-radius:20px;padding:18px;box-shadow:0 15px 50px #0003;max-height:82dvh;overflow:auto}
-.sheettop{display:flex;justify-content:space-between;align-items:flex-start}.sheet h2{font-size:18px;margin:0 0 4px;color:var(--navy)}.sheet p{font-size:12px;color:#637386;line-height:1.5;margin:6px 0 12px}
-.close{border:0;background:#edf2f6;border-radius:10px;width:32px;height:32px;font-size:18px;color:var(--navy)}
-.pill{display:inline-block;border-radius:20px;background:#edf7f1;color:#268454;padding:5px 9px;font-size:10px;font-weight:700}
-.detailgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.detail{background:#f3f6f9;padding:10px;border-radius:10px}.detail small{display:block;color:#718096;font-size:9px}.detail b{font-size:11px}
-.actionrow{display:flex;gap:8px;margin-top:12px}.action{border:0;border-radius:11px;padding:11px 13px;background:var(--navy);color:white;font-weight:700;font-size:11px;flex:1}.action.secondary{background:#edf2f6;color:var(--navy)}
-.toast{position:fixed;z-index:20;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#172d49;color:white;padding:10px 14px;border-radius:12px;font-size:11px;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}.toast.show{opacity:1}
-@media (orientation:landscape){main{flex-direction:row}.scene-wrap{flex:1.7}.bottom{width:min(36%,340px);max-height:none;border-top:0;border-left:1px solid var(--line);overflow:auto}.employee-list{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.stat{padding:7px}.stat strong{font-size:15px}}
-@media (max-height:520px) and (orientation:landscape){header{height:48px}.bottom{padding:7px}.section-head{margin:3px}.emp{padding:6px}.stats{margin-bottom:4px}}
+:root{--bg:#091321;--panel:#101e30;--panel2:#16283e;--line:#29405a;--txt:#edf5ff;--muted:#9eb1c8;--cyan:#58d5c4;--gold:#f0c36d;--purple:#a995ff}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--txt);font:14px/1.45 Inter,system-ui,-apple-system,Segoe UI,sans-serif}body{overflow:hidden}
+.app{height:100dvh;display:grid;grid-template-rows:64px minmax(0,1fr);grid-template-columns:minmax(0,1fr) 340px}
+header{grid-column:1/3;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:#0c1929;border-bottom:1px solid var(--line);z-index:4}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1c9e9a,#526bd8);display:grid;place-items:center;font-weight:900;font-size:17px}.brand b{font-size:12px;letter-spacing:.1em}.brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:.18em;margin-top:3px}
+.hright{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:11px}.live{color:var(--cyan)}.live:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--cyan);margin-right:7px;box-shadow:0 0 9px var(--cyan)}
+main{position:relative;min-width:0;min-height:0;background:radial-gradient(ellipse at 50% 35%,#203650,#0a1423 72%);overflow:hidden}#scene{width:100%;height:100%;display:block;touch-action:none}
+.scenehead{position:absolute;top:16px;left:18px;pointer-events:none;z-index:1}.scenehead b{font-size:14px;letter-spacing:.05em}.scenehead small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.hint{position:absolute;bottom:14px;left:14px;background:#091522dd;border:1px solid var(--line);border-radius:9px;padding:8px 10px;color:var(--muted);font-size:10px;pointer-events:none}
+.zoombar{position:absolute;right:12px;bottom:12px;display:flex;gap:6px}.zoombar button{width:40px;height:40px;border:1px solid #405875;border-radius:11px;background:#15283d;color:white;font-size:21px}
+.side{min-height:0;overflow:auto;background:#0d1928;border-left:1px solid var(--line);padding:16px}.eyebrow{font-size:10px;letter-spacing:.16em;color:#91a9c5;font-weight:750;margin:3px 0 10px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}.stat,.panel{background:linear-gradient(145deg,#17283e,#101d2d);border:1px solid var(--line);border-radius:12px;padding:12px}.stat strong{display:block;font-size:22px}.stat span{color:var(--muted);font-size:9px;letter-spacing:.08em}
+.panel{margin-bottom:12px}.panel h3{font-size:13px;margin:0 0 7px}.sub{font-size:11px;color:var(--muted)}.agentlist{display:grid;gap:6px}.agent{width:100%;display:flex;align-items:center;gap:9px;text-align:left;padding:9px;border-radius:9px;border:1px solid #293e57;background:#101e30;color:var(--txt)}.agent.selected{border-color:var(--purple);background:#1c2942}.face{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:18px;background:#263d57;flex:none}.agent strong{display:block;font-size:11px}.agent small{display:block;color:var(--muted);font-size:9px}.status{margin-left:auto;font-size:9px;color:var(--gold)}
+.detail{display:none}.detail.show{display:block}.detailhead{display:flex;gap:10px;align-items:center}.detailhead .face{width:43px;height:43px;font-size:22px}.detailhead strong{font-size:13px}.detailhead small{display:block;color:var(--muted);font-size:10px}.rowfield{padding:8px 0;border-top:1px solid #2a3d53;margin-top:8px}.rowfield label{display:block;color:#8ea5c0;font-size:9px;letter-spacing:.12em;margin-bottom:3px}.rowfield div{font-size:11px}
+button.primary,button.secondary{border-radius:9px;padding:10px 12px;font-weight:650;width:100%;margin-top:8px}button.primary{background:#247f83;color:white;border:1px solid #4bb9ad}button.secondary{background:#172a40;color:#dceaff;border:1px solid #3a526e}
+.task{border-top:1px solid #2a3d53;padding:9px 0}.task strong{font-size:11px;display:block}.task small{color:var(--muted);font-size:9px}.tag{display:inline-block;border-radius:20px;padding:3px 7px;background:#3c3320;color:#f4ce80;font-size:9px;margin-top:5px}.task button{width:auto;margin-top:8px;padding:7px 10px;font-size:10px}.task-result{margin-top:8px;color:#bcd0e7;font-size:10px}.task-result summary{cursor:pointer}.task-result pre{white-space:pre-wrap;overflow:auto;max-height:240px;padding:9px;background:#091727;border:1px solid #29405a;border-radius:8px;color:#edf5ff;font:11px/1.5 ui-monospace,monospace}
+.system-health{white-space:pre-line;line-height:1.75}
+.overlay{display:none;position:fixed;inset:0;background:#020812bb;z-index:10;align-items:center;justify-content:center;padding:16px}.overlay.open{display:flex}.modal{width:min(520px,100%);max-height:90dvh;overflow:auto;background:#112138;border:1px solid #3a5574;border-radius:16px;padding:18px;box-shadow:0 18px 70px #0009}.modal h2{font-size:17px;margin:0 0 5px}.modal p{font-size:11px;color:var(--muted);margin:0 0 14px}.modal label{display:block;color:#a8bad0;font-size:10px;margin:12px 0 5px}.modal input,.modal textarea,.modal select{width:100%;border:1px solid #405873;background:#091727;color:#fff;border-radius:9px;padding:11px;font:inherit}.modal textarea{min-height:100px;resize:vertical}.modalactions{display:flex;gap:8px;margin-top:12px}.modalactions button{flex:1}
+footer{font-size:9px;color:#7f94ae;text-align:center;padding:5px}
+@media(max-width:760px){body{overflow:auto}.app{height:auto;min-height:100dvh;grid-template-columns:1fr;grid-template-rows:58px minmax(390px,57dvh) auto}header{grid-column:1;padding:0 11px}.brand b{font-size:10px}.brand small{font-size:8px}.hright{font-size:9px}.side{border-left:0;border-top:1px solid var(--line);padding:12px}.scenehead{top:10px;left:11px}.scenehead b{font-size:12px}.hint{font-size:9px;bottom:9px;left:9px;right:145px}.stat{padding:9px}.stat strong{font-size:19px}}
 </style>
 </head>
 <body>
 <div class="app">
-<header>
-  <div><div class="brand">HUMAN CAPITAL WORKSPACE</div><div class="subbrand">Virtual Office · CEO Workspace</div></div>
-  <div class="online"><span class="dot"></span> PROTOTYPE ONLINE</div>
-</header>
-<main>
-  <section class="scene-wrap">
-    <canvas id="scene" aria-label="Kantor virtual 3D. Ketuk karakter untuk membuka profil."></canvas>
-    <div class="hint">KETUK KARAKTER UNTUK MEMBUKA PROFIL · GESER UNTUK MEMUTAR</div>
-    <div class="scene-actions">
-      <button class="iconbtn" id="zoomIn" aria-label="Perbesar">＋</button>
-      <button class="iconbtn" id="zoomOut" aria-label="Perkecil">−</button>
-      <button class="iconbtn" id="rotate" aria-label="Putar kamera">↻</button>
-      <button class="iconbtn" id="reset" aria-label="Reset kamera">⌂</button>
-    </div>
-    <div class="legend">🟢 Siap menerima tugas &nbsp; · &nbsp; Klik karakter</div>
-  </section>
-  <section class="bottom">
-    <div class="stats">
-      <div class="stat"><strong>08</strong><span>AI EMPLOYEES</span></div>
-      <div class="stat"><strong id="activeCount">00</strong><span>TUGAS AKTIF</span></div>
-      <div class="stat"><strong>CEO</strong><span>BILAL</span></div>
-    </div>
-    <div class="section-head"><span>AI WORKFORCE</span><span style="font-size:9px;color:#7b8a99;font-weight:500">Pilih karyawan</span></div>
-    <div class="employee-list" id="employeeList"></div>
-    <div class="section-head" style="margin-top:14px"><span>DAFTAR PENUGASAN CEO</span><button class="action" id="newTask" style="flex:0;padding:7px 10px">+ Tugas</button></div>
-    <div class="task-list" id="taskList"><div class="empty">Belum ada penugasan.</div></div><div class="employee-list" id="employeeList"></div>
-  </section>
-</main>
-</div>
-<div class="overlay" id="profileOverlay">
-  <div class="sheet">
-    <div class="sheettop"><div><h2 id="profileName">AI Employee</h2><span class="pill">AVAILABLE · PROTOTYPE</span></div><button class="close" id="closeProfile">×</button></div>
-    <p id="profileRole">Profil karyawan virtual</p>
-    <div class="detailgrid">
-      <div class="detail"><small>DEPARTEMEN</small><b id="profileDept">Belum ditetapkan</b></div>
-      <div class="detail"><small>STATUS</small><b>Menunggu penugasan</b></div>
-      <div class="detail"><small>ATASAN</small><b>CEO Bilal</b></div>
-      <div class="detail"><small>RUANG KERJA</small><b id="profileRoom">Main Workspace</b></div>
-    </div>
-    <p>Identitas dan jabatan final akan ditentukan pada tahap desain organisasi. Pada prototype ini, karakter dan interaksi sudah dapat diuji.</p>
-    <div class="actionrow"><button class="action" id="assignTask">Berikan tugas</button><button class="action secondary" id="viewProfile">Lihat profil</button></div>
-  </div>
-</div>
-<div class="overlay" id="taskOverlay">
-  <div class="sheet">
-    <div class="sheettop"><div><h2>Buat Penugasan CEO</h2><p>Catat instruksi dan tentukan penerima tugas.</p></div><button class="close" id="closeTask">×</button></div>
-    <form id="taskForm">
-      <div class="field"><label for="taskTitle">Judul tugas *</label><input id="taskTitle" maxlength="100" required placeholder="Contoh: Analisis kebutuhan organisasi"></div>
-      <div class="field"><label for="taskDescription">Instruksi / output yang diharapkan *</label><textarea id="taskDescription" maxlength="2000" required placeholder="Jelaskan konteks, instruksi, dan hasil yang diharapkan..."></textarea></div>
-      <div class="field"><label for="taskAssignee">Ditugaskan kepada *</label><select id="taskAssignee" required><option value="all">Seluruh AI Workforce (8 karyawan)</option></select></div>
-      <div class="field"><label for="taskPriority">Prioritas</label><select id="taskPriority"><option>Normal</option><option>Tinggi</option><option>Urgent</option></select></div>
-      <div class="field"><label for="taskDue">Target selesai (opsional)</label><input id="taskDue" type="date"></div>
-      <div class="actionrow"><button class="action" type="submit">Simpan Penugasan</button><button class="action secondary" type="button" id="cancelTask">Batal</button></div>
-    </form>
-  </div>
-</div>
-<div class="toast" id="toast">Prototype interaction aktif</div><div class="toast" id="toast">Prototype interaction aktif</div>
-<script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-
-const employees=[
- {id:1,name:"AI Employee 01",role:"Jabatan akan ditentukan",dept:"Belum ditetapkan",room:"Meja kerja 01",color:0x3d78a8,shirt:0x3978a8,skin:0xe8b995,hair:0x49352c,emoji:"👩🏻‍💼"},
- {id:2,name:"AI Employee 02",role:"Jabatan akan ditentukan",dept:"Belum ditetapkan",room:"Meja kerja 02",color:0xb46d50,shirt:0xb46d50,skin:0xd9a27d,hair:0x292321,emoji:"👨🏽‍💼"},
- {id:3,name:"AI Employee 03",role:"Jabatan akan ditentukan",dept:"Belum ditetapkan",room:"Meja kerja 03",color:0x548c75,shirt:0x548c75,skin:0xf0c7a4,hair:0x67452f,emoji:"👩🏼‍💻"},
- {id:4,name:"AI Employee 04",role:"Jabatan akan ditentukan",dept:"Belum ditetapkan",room:"Meja kerja 04",color:0x8c6eaa,shirt:0x8c6eaa,skin:0xc98e6b,hair:0x251e1b,emoji:"👨🏻‍💻"},
- {id:5,name:"AI Employee 05",role:"Jabatan akan ditentukan",dept:"Belum ditetapkan",room:"Meja kerja 05",color:0xc18b3f,shirt:0xc18b3f,skin:0xe8b995,hair:0x39291f,emoji:"👩🏽‍💼"},
- {id:6,name:"AI Employee 06",role:"Jabatan akan ditentukan",dept:"Belum ditetapkan",room:"Meja kerja 06",color:0x527e9c,shirt:0x527e9c,skin:0xd9a27d,hair:0x30231d,emoji:"👨🏾‍💼"},
- {id:7,name:"AI Employee 07",role:"Jabatan akan ditentukan",dept:"Belum ditetapkan",room:"Meja kerja 07",color:0x9b687c,shirt:0x9b687c,skin:0xf0c7a4,hair:0x5b3c2c,emoji:"👩🏻‍💻"},
- {id:8,name:"AI Employee 08",role:"Jabatan akan ditentukan",dept:"Belum ditetapkan",room:"Meja kerja 08",color:0x7d8760,shirt:0x7d8760,skin:0xc98e6b,hair:0x241d19,emoji:"👨🏼‍💻"}
+<header><div class="brand"><div class="logo">HC</div><div><b>HUMAN CAPITAL WORKSPACE</b><small>AI VIRTUAL COMPANY · CEO COMMAND VIEW</small></div></div><div class="hright"><span class="live">OFFICE ONLINE</span><span>CEO ACCESS</span></div></header>
+<main><div class="scenehead"><b>VIRTUAL OFFICE · ISOMETRIC</b><small>Sentuh karakter untuk membuka profil AI employee</small></div><canvas id="scene"></canvas><div class="hint">Tap karakter untuk memilih · Geser untuk memutar · + / − untuk zoom</div><div class="zoombar"><button id="zin">+</button><button id="zout">−</button><button id="reset">⌂</button></div></main>
+<aside class="side">
+<div class="eyebrow">CEO DASHBOARD</div><div class="stats"><div class="stat"><strong>08</strong><span>AI EMPLOYEES</span></div><div class="stat"><strong>08</strong><span>WORK AREAS</span></div><div class="stat"><strong id="taskCount">00</strong><span>TASK RECORDS</span></div><div class="stat"><strong>0</strong><span>AI EXECUTIONS</span></div></div>
+<div class="panel"><div class="eyebrow">YOUR AI TEAM</div><div class="agentlist" id="agentList"></div></div>
+<div class="panel detail" id="profile"><div class="eyebrow">EMPLOYEE PROFILE</div><div class="detailhead"><div class="face" id="pfFace">🤖</div><div><strong id="pfName">AI Employee 01</strong><small id="pfRole">Role to be assigned</small></div></div><div class="rowfield"><label>CAPABILITY / SCOPE</label><div id="pfSkill">Belum ditetapkan oleh CEO.</div></div><div class="rowfield"><label>WORKSPACE</label><div id="pfRoom">Main Workspace</div></div><div class="rowfield"><label>ACTUAL STATUS</label><div id="pfStatus">Idle — awaiting CEO direction</div></div><button class="primary" id="assignOne">Berikan tugas</button><button class="secondary" id="closeProfile">Tutup profil</button></div>
+<div class="panel"><div class="eyebrow">CEO COMMAND</div><h3>Command Center</h3><div class="sub">Tuliskan instruksi dari CEO, tentukan PIC, dan simpan sebagai task. Eksekusi AI belum diaktifkan sampai backend dan model AI tersambung.</div><button class="primary" id="newTask">＋ Buat instruksi / tugas</button></div>
+<div class="panel"><div class="eyebrow">TASK REGISTER</div><div id="taskList" class="sub">Belum ada instruksi.</div></div>
+<div class="panel"><div class="eyebrow">SYSTEM STATUS · LIVE CHECK</div><div class="sub system-health" id="systemHealth" aria-live="polite">Memeriksa status backend...</div><div class="sub" style="margin-top:9px">Pemeriksaan ini membaca status Worker, D1, dan AI binding. Hubungkan Task API untuk membaca dan menyimpan tugas ke D1 serta menjalankan draf AI. Tanpa koneksi, tugas tetap tersimpan lokal di browser.</div><div class="sub" id="apiConnectionStatus" aria-live="polite" style="margin-top:8px">Task API: belum terhubung.</div><button class="secondary" id="apiConnectButton">Hubungkan Task API</button></div><footer>HUMAN CAPITAL WORKSPACE · FOUNDATION BUILD 01</footer>
+</aside></div>
+<div class="overlay" id="taskModal"><div class="modal"><h2>Instruksi CEO</h2><p>Catat pekerjaan yang ingin ditugaskan. Statusnya akan tetap “menunggu eksekusi AI” sampai sistem agent terhubung.</p><label>JUDUL / OUTPUT YANG DIMINTA</label><input id="taskTitle" placeholder="Contoh: Susun analisis kebutuhan HC..."><label>INSTRUKSI LENGKAP</label><textarea id="taskDesc" placeholder="Jelaskan tujuan, konteks, ruang lingkup, dan output yang diharapkan..."></textarea><label>PENUGASAN</label><select id="taskOwner"><option value="all">Seluruh tim (belum dibagi otomatis)</option></select><div class="modalactions"><button class="secondary" id="cancelTask">Batal</button><button class="primary" id="saveTask">Simpan instruksi</button></div></div></div>
+<div class="overlay" id="apiModal"><div class="modal"><h2>Hubungkan Task API</h2><p>Masukkan HCW_API_KEY yang sama dengan secret pada GitHub Actions dan Cloudflare Worker. Jangan gunakan key ini pada perangkat bersama.</p><label>HCW API KEY</label><input id="apiKeyInput" type="password" autocomplete="off" placeholder="Tempel API key"><div class="sub" style="margin-top:8px">Key hanya disimpan sementara di session browser ini (sessionStorage), bukan di source code atau localStorage. Ini mekanisme sementara untuk MVP, bukan autentikasi multi-user produksi.</div><div class="modalactions"><button class="secondary" id="apiCancel">Tutup</button><button class="secondary" id="apiDisconnect">Putuskan</button><button class="primary" id="apiSave">Hubungkan</button></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script>
+(()=>{
+const team=[
+{id:1,name:"AI Employee 01",role:"Jabatan ditentukan CEO",room:"CEO Office",face:"🧑🏻‍💼",skill:"Keahlian dan tanggung jawab belum ditetapkan. Menunggu arahan CEO.",color:0x4e9f9b},
+{id:2,name:"AI Employee 02",role:"Jabatan ditentukan CEO",room:"Strategy Room",face:"👩🏻‍💻",skill:"Keahlian dan tanggung jawab belum ditetapkan. Menunggu arahan CEO.",color:0x6389c9},
+{id:3,name:"AI Employee 03",role:"Jabatan ditentukan CEO",room:"Research Room",face:"🧑🏽‍💻",skill:"Keahlian dan tanggung jawab belum ditetapkan. Menunggu arahan CEO.",color:0xb38a55},
+{id:4,name:"AI Employee 04",role:"Jabatan ditentukan CEO",room:"Analysis Room",face:"👩🏽‍💼",skill:"Keahlian dan tanggung jawab belum ditetapkan. Menunggu arahan CEO.",color:0x9b78c5},
+{id:5,name:"AI Employee 05",role:"Jabatan ditentukan CEO",room:"Collaboration Room",face:"🧑🏻‍🔬",skill:"Keahlian dan tanggung jawab belum ditetapkan. Menunggu arahan CEO.",color:0x5caa83},
+{id:6,name:"AI Employee 06",role:"Jabatan ditentukan CEO",room:"Learning Studio",face:"👩🏻‍🎓",skill:"Keahlian dan tanggung jawab belum ditetapkan. Menunggu arahan CEO.",color:0xc17b68},
+{id:7,name:"AI Employee 07",role:"Jabatan ditentukan CEO",room:"Project Room",face:"🧑🏾‍💻",skill:"Keahlian dan tanggung jawab belum ditetapkan. Menunggu arahan CEO.",color:0x4f9dbd},
+{id:8,name:"AI Employee 08",role:"Jabatan ditentukan CEO",room:"Meeting Room",face:"👩🏾‍💼",skill:"Keahlian dan tanggung jawab belum ditetapkan. Menunggu arahan CEO.",color:0xc49b4f}
 ];
-const canvas=document.querySelector('#scene');
-const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-const scene=new THREE.Scene();scene.background=new THREE.Color(0xe5edf3);
-const camera=new THREE.PerspectiveCamera(34,1,.1,100);camera.position.set(11,13,15);
-const target=new THREE.Vector3(0,0,0);
-scene.add(new THREE.HemisphereLight(0xffffff,0x8294a5,2.1));
-const sun=new THREE.DirectionalLight(0xffffff,2.1);sun.position.set(8,14,9);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
-const mat=(color,roughness=.82)=>new THREE.MeshStandardMaterial({color,roughness});
-function box(parent,w,h,d,color,x,y,z,opts={}){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(color));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m}
-function cyl(parent,r1,r2,h,color,x,y,z){const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,12),mat(color));m.position.set(x,y,z);m.castShadow=true;parent.add(m);return m}
-const floor=box(scene,12,.35,9,0xd7e0e7,0,-.2,0);floor.receiveShadow=true;
-const base=box(scene,12,.16,9,0xf7f8f8,0,-.02,0);
-const wallMat=mat(0xfafafa);
-box(scene,12,2.6,.18,0xdce5ec,0,1.2,-4.45);
-box(scene,.18,2.6,9,-1, -5.9,1.2,0); // corrected material below
-// Replace invalid dark wall with pale wall
-scene.children[scene.children.length-1].material=mat(0xe4ebf0);
-box(scene,.18,2.6,9,0xe4ebf0,5.9,1.2,0);
-box(scene,2.3,.12,1.5,0x9db4c6,0,.1,-3.4);
-box(scene,2.1,.12,1.35,0xf0f4f6,0,.22,-3.4);
-// CEO office partition and desk
-box(scene,.10,1.25,3.0,0x9eb1c1,-3.8,.6,-2.9);
-box(scene,.10,1.25,2.2,0x9eb1c1,-2.7,.6,-3.9);
-box(scene,1.7,.18,.85,0x795b43,-4.65,.65,-3.35);
-box(scene,.10,.65,.10,0x594632,-5.3,.25,-3.0);box(scene,.10,.65,.10,0x594632,-4.0,.25,-3.0);
-box(scene,.55,.08,.38,0x263b50,-4.6,.82,-3.35);
-cyl(scene,.28,.28,.12,0x34495e,-4.6,.13,-2.35);cyl(scene,.08,.08,.55,0x34495e,-4.6,.43,-2.35);
-// Meeting table
-box(scene,2.5,.18,1.25,0x987654,2.9,.55,-2.85);
-for(let x of [2.0,3.8])for(let z of [-3.5,-2.2]){cyl(scene,.23,.23,.12,0x536d83,x,.25,z);cyl(scene,.06,.06,.45,0x536d83,x,.48,z)}
-// Plants
-function plant(x,z){cyl(scene,.25,.3,.35,0x9b7957,x,.2,z);for(let i=0;i<5;i++){const leaf=new THREE.Mesh(new THREE.ConeGeometry(.13,.65,7),mat(0x5f9875));leaf.position.set(x+(Math.random()-.5)*.28,.68+(Math.random()*.12),z+(Math.random()-.5)*.25);leaf.rotation.z=(Math.random()-.5)*.8;scene.add(leaf)}}
-plant(-5,-3.7);plant(5,-3.7);plant(-5,3.6);plant(5,3.6);
-// Rug
-const rug=box(scene,6,.035,4,0xe9eef2,0,.01,1.5);rug.material=mat(0xe9eef2);
-// desks, monitors, chairs, people
-const people=[];
-function makePerson(emp,x,z){
- const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
- const skin=mat(emp.skin),shirt=mat(emp.shirt),dark=mat(emp.hair),pants=mat(0x34465a);
- const body=new THREE.Mesh(new THREE.CapsuleGeometry(.22,.42,4,8),shirt);body.position.y=.83;body.castShadow=true;g.add(body);
- const head=new THREE.Mesh(new THREE.SphereGeometry(.19,12,10),skin);head.position.y=1.34;head.castShadow=true;g.add(head);
- const hair=new THREE.Mesh(new THREE.SphereGeometry(.195,12,8,0,Math.PI*2,0,Math.PI*.58),dark);hair.position.y=1.39;g.add(hair);
- const leg1=box(g,.13,.42,.15,0x34465a,-.12,.28,0);const leg2=box(g,.13,.42,.15,0x34465a,.12,.28,0);
- const arm1=box(g,.12,.42,.13,emp.shirt,-.28,.9,0);arm1.rotation.z=-.22;const arm2=box(g,.12,.42,.13,emp.shirt,.28,.9,0);arm2.rotation.z=.22;
- g.userData.employee=emp;g.userData.baseY=0;
- // subtle selectable ring
- const ring=new THREE.Mesh(new THREE.TorusGeometry(.38,.025,6,24),mat(emp.color));ring.rotation.x=Math.PI/2;ring.position.y=.04;g.add(ring);
- // desk
- box(scene,1.15,.12,.65,0x9b795b,x,.82,z-.65);
- box(scene,.48,.32,.06,0x34495e,x,.99,z-.75);
- box(scene,.42,.25,.02,0x8fb3c9,x,1.0,z-.71);
- for(let dx of [-.48,.48])box(scene,.07,.78,.07,0x725b47,x+dx,.4,z-.65);
- cyl(scene,.25,.25,.1,0x536d83,x,.22,z+.12);cyl(scene,.06,.06,.5,0x536d83,x,.49,z+.12);
- people.push(g);
+const rooms=[["CEO OFFICE",-9,-5],["STRATEGY ROOM",-3,-5],["RESEARCH ROOM",3,-5],["ANALYSIS ROOM",9,-5],["COLLABORATION",-9,3.5],["LEARNING STUDIO",-3,3.5],["PROJECT ROOM",3,3.5],["MEETING ROOM",9,3.5]];
+const canvas=document.getElementById("scene"),renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.outputColorSpace=THREE.SRGBColorSpace;
+const scene=new THREE.Scene();scene.fog=new THREE.Fog(0x0b1727,24,45);
+const camera=new THREE.OrthographicCamera(-13,13,9,-9,.1,100);let angle=0,zoom=1;const target=new THREE.Vector3(0,0,0);
+function placeCamera(){const dist=25;camera.position.set(Math.sin(angle)*dist,dist*.9,Math.cos(angle)*dist);camera.lookAt(target);const w=canvas.clientWidth||800,h=canvas.clientHeight||500,fr=(window.innerWidth<760?17:13.5)/zoom,a=w/h;camera.left=-fr*a/1.5;camera.right=fr*a/1.5;camera.top=fr;camera.bottom=-fr;camera.updateProjectionMatrix()}
+scene.add(new THREE.HemisphereLight(0xc4dcff,0x334258,2.2));const sun=new THREE.DirectionalLight(0xffffff,2.4);sun.position.set(-9,18,12);sun.castShadow=true;scene.add(sun);const glow=new THREE.PointLight(0x3c8fba,35,32);glow.position.set(2,8,-4);scene.add(glow);
+const mat=c=>new THREE.MeshStandardMaterial({color:c,roughness:.78});const floor=mat(0x24364b),wall=mat(0x7890a9),desk=mat(0x41536b);
+const world=new THREE.Group();scene.add(world);
+function box(parent,x,y,z,w,h,d,m){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o}
+box(world,0,-.35,0,28,.7,19,floor);
+box(world,0,-.01,-9.5,28,.12,.16,mat(0x68819e));box(world,-14,-.01,0,.16,.12,19,mat(0x68819e));box(world,14,-.01,0,.16,.12,19,mat(0x68819e));
+const actors=[];
+function makePerson(parent,x,z,person){
+ const g=new THREE.Group();g.position.set(x,0,z);parent.add(g);
+ const shirt=mat(person.color),skin=mat(0xd9ad8d),dark=mat(0x263347),eyeMat=mat(0x263347);
+ box(g,0,.43,0,.34,.42,.24,shirt);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.15,16,12),skin);head.position.set(0,.78,0);g.add(head);
+ const hair=new THREE.Mesh(new THREE.SphereGeometry(.157,16,12,0,Math.PI*2,0,Math.PI*.58),dark);hair.position.set(0,.84,-.018);g.add(hair);
+ [-.052,.052].forEach(ex=>{const eye=new THREE.Mesh(new THREE.SphereGeometry(.018,8,8),eyeMat);eye.position.set(ex,.79,.139);g.add(eye)});
+ const arm1=new THREE.Group();arm1.position.set(-.2,.56,.06);g.add(arm1);box(arm1,0,-.14,0,.09,.29,.1,skin);
+ const arm2=new THREE.Group();arm2.position.set(.2,.56,.06);g.add(arm2);box(arm2,0,-.14,0,.09,.29,.1,skin);
+ const leg1=new THREE.Group();leg1.position.set(-.09,.28,0);g.add(leg1);box(leg1,0,-.13,0,.11,.27,.13,dark);
+ const leg2=new THREE.Group();leg2.position.set(.09,.28,0);g.add(leg2);box(leg2,0,-.13,0,.11,.27,.13,dark);
+ const halo=new THREE.Mesh(new THREE.TorusGeometry(.29,.025,6,24),new THREE.MeshBasicMaterial({color:0x59d6bf,transparent:true,opacity:.6}));halo.rotation.x=Math.PI/2;halo.position.y=.025;g.add(halo);
+ const hit=new THREE.Mesh(new THREE.SphereGeometry(.78,16,12),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));hit.position.y=.48;hit.userData.employee=person;g.add(hit);
+ actors.push({g,arm1,arm2,leg1,leg2,head,person,halo,hit,baseX:x,baseZ:z});return g
 }
-const positions=[[-3.3,-.2],[-1.1,-.2],[1.1,-.2],[3.3,-.2],[-3.3,2.5],[-1.1,2.5],[1.1,2.5],[3.3,2.5]];
-employees.forEach((e,i)=>makePerson(e,...positions[i]));
-// room labels as small floating boards
-function label(text,x,z,color=0x28445e){const c=document.createElement('canvas');c.width=512;c.height=128;const ctx=c.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,512,128);ctx.fillStyle='#'+color.toString(16).padStart(6,'0');ctx.font='bold 42px Arial';ctx.textAlign='center';ctx.fillText(text,256,82);const tex=new THREE.CanvasTexture(c);const mesh=new THREE.Mesh(new THREE.PlaneGeometry(2.4,.6),new THREE.MeshBasicMaterial({map:tex,transparent:true,side:THREE.DoubleSide}));mesh.position.set(x,2.25,z);scene.add(mesh)}
-label('CEO OFFICE',-4.35,-4.25);label('MEETING ROOM',2.8,-4.25);label('MAIN WORKSPACE',0,4.15);
-const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let selected=null,drag=false,lastX=0,lastY=0,theta=Math.PI/4,phi=1.02,radius=19;
-function updateCamera(){phi=Math.max(.55,Math.min(1.35,phi));camera.position.set(target.x+radius*Math.sin(phi)*Math.sin(theta),target.y+radius*Math.cos(phi),target.z+radius*Math.sin(phi)*Math.cos(theta));camera.lookAt(target)}
-updateCamera();
-function resize(){const r=canvas.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/Math.max(1,r.height);camera.updateProjectionMatrix()}
-new ResizeObserver(resize).observe(canvas);resize();
-function selectAt(clientX,clientY){const rect=canvas.getBoundingClientRect();pointer.x=((clientX-rect.left)/rect.width)*2-1;pointer.y=-((clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(people,true);if(hits.length){let o=hits[0].object;while(o&&!o.userData.employee)o=o.parent;if(o)openProfile(o.userData.employee)}}
-canvas.addEventListener('pointerdown',e=>{drag=false;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId)});
-canvas.addEventListener('pointermove',e=>{if(e.buttons){const dx=e.clientX-lastX,dy=e.clientY-lastY;if(Math.abs(dx)+Math.abs(dy)>3)drag=true;theta-=dx*.008;phi+=dy*.006;updateCamera();lastX=e.clientX;lastY=e.clientY}});
-canvas.addEventListener('pointerup',e=>{if(!drag)selectAt(e.clientX,e.clientY)});
-canvas.addEventListener('wheel',e=>{radius=Math.max(11,Math.min(27,radius+e.deltaY*.018));updateCamera()},{passive:true});
-document.querySelector('#zoomIn').onclick=()=>{radius=Math.max(11,radius-1.5);updateCamera()};
-document.querySelector('#zoomOut').onclick=()=>{radius=Math.min(27,radius+1.5);updateCamera()};
-document.querySelector('#rotate').onclick=()=>{theta+=Math.PI/4;updateCamera()};
-document.querySelector('#reset').onclick=()=>{theta=Math.PI/4;phi=1.02;radius=19;updateCamera()};
-function openProfile(emp){selected=emp;document.querySelector('#profileName').textContent=emp.name;document.querySelector('#profileRole').textContent=emp.role;document.querySelector('#profileDept').textContent=emp.dept;document.querySelector('#profileRoom').textContent=emp.room;document.querySelector('#profileOverlay').classList.add('show')}
-document.querySelector('#closeProfile').onclick=()=>document.querySelector('#profileOverlay').classList.remove('show');
-document.querySelector('#profileOverlay').addEventListener('click',e=>{if(e.target.id==='profileOverlay')e.currentTarget.classList.remove('show')});
-const taskOverlay=document.querySelector('#taskOverlay');
-const assigneeSelect=document.querySelector('#taskAssignee');
-employees.forEach(e=>{const o=document.createElement('option');o.value=String(e.id);o.textContent=e.name;assigneeSelect.appendChild(o)});
-let tasks=[];
-try{tasks=JSON.parse(localStorage.getItem('hcw_tasks')||'[]');if(!Array.isArray(tasks))tasks=[]}catch{tasks=[]}
-function saveTasks(){localStorage.setItem('hcw_tasks',JSON.stringify(tasks));renderTasks()}
-function renderTasks(){
- const list=document.querySelector('#taskList');list.innerHTML='';
- document.querySelector('#activeCount').textContent=String(tasks.filter(t=>t.status!=='Selesai').length).padStart(2,'0');
- if(!tasks.length){list.innerHTML='<div class="empty">Belum ada penugasan. Gunakan tombol + Tugas untuk membuat instruksi pertama.</div>';return}
- [...tasks].reverse().forEach(t=>{const card=document.createElement('div');card.className='task-card';const who=t.assignee==='all'?'Seluruh AI Workforce':employees.find(e=>String(e.id)===t.assignee)?.name||'AI Employee';card.innerHTML='<b></b><p></p><div class="task-meta"><span></span><span></span></div>';card.querySelector('b').textContent=t.title;card.querySelector('p').textContent=t.description;card.querySelectorAll('.task-meta span')[0].textContent=who+' · '+t.priority;card.querySelectorAll('.task-meta span')[1].textContent=t.status;list.appendChild(card)})
-}
-function openTaskForm(assignee='all'){document.querySelector('#profileOverlay').classList.remove('show');document.querySelector('#taskForm').reset();assigneeSelect.value=assignee;taskOverlay.classList.add('show')}
-document.querySelector('#assignTask').onclick=()=>openTaskForm(selected?String(selected.id):'all');
-document.querySelector('#newTask').onclick=()=>openTaskForm('all');
-document.querySelector('#closeTask').onclick=()=>taskOverlay.classList.remove('show');
-document.querySelector('#cancelTask').onclick=()=>taskOverlay.classList.remove('show');
-taskOverlay.addEventListener('click',e=>{if(e.target===taskOverlay)taskOverlay.classList.remove('show')});
-document.querySelector('#taskForm').addEventListener('submit',e=>{
- e.preventDefault();
- const title=document.querySelector('#taskTitle').value.trim(),description=document.querySelector('#taskDescription').value.trim();
- if(!title||!description){toast('Judul dan instruksi wajib diisi');return}
- tasks.push({id:Date.now(),title,description,assignee:assigneeSelect.value,priority:document.querySelector('#taskPriority').value,due:document.querySelector('#taskDue').value,status:'Tercatat · menunggu sistem AI',createdAt:new Date().toISOString()});
- saveTasks();taskOverlay.classList.remove('show');toast('Penugasan berhasil disimpan di perangkat ini');
+rooms.forEach((r,i)=>{const [label,x,z]=r;const group=new THREE.Group();group.position.set(x,0,z);world.add(group);const col=mat([0x31536a,0x3b5e70,0x3c536e,0x57496e,0x315d59,0x5a4c67,0x465c78,0x66553d][i]);box(group,0,.02,0,5.5,.12,4.6,col);box(group,0,.62,-2.26,5.5,1.2,.08,wall);box(group,-2.71,.62,0,.08,1.2,4.6,wall);box(group,0,.25,.95,1.75,.12,.78,desk);box(group,0,.65,.7,.7,.62,.08,mat(0x273c54));const person=team[i];makePerson(group,0,-.45,person);
+ const sign=box(group,0,1.42,-2.32,2.8,.42,.06,mat(0x14283d));sign.userData.roomLabel=label;
 });
+const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();let selected=team[0];
+function showProfile(p){selected=p;document.getElementById("profile").classList.add("show");document.getElementById("pfFace").textContent=p.face;document.getElementById("pfName").textContent=p.name;document.getElementById("pfRole").textContent=p.role;document.getElementById("pfSkill").textContent=p.skill;document.getElementById("pfRoom").textContent=p.room;document.getElementById("pfStatus").textContent="Idle — awaiting CEO direction";document.querySelectorAll(".agent").forEach(b=>b.classList.toggle("selected",Number(b.dataset.id)===p.id))}
+function makeList(){const list=document.getElementById("agentList"),owner=document.getElementById("taskOwner");team.forEach(p=>{const b=document.createElement("button");b.className="agent";b.dataset.id=p.id;b.innerHTML='<span class="face">'+p.face+'</span><span><strong>'+p.name+'</strong><small>'+p.room+'</small></span><span class="status">IDLE</span>';b.onclick=()=>showProfile(p);list.appendChild(b);const o=document.createElement("option");o.value=p.id;o.textContent=p.name+" — "+p.room;owner.appendChild(o)})}
+makeList();showProfile(team[0]);
+function pick(e){const rect=canvas.getBoundingClientRect();pointer.x=((e.clientX-rect.left)/rect.width)*2-1;pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;ray.setFromCamera(pointer,camera);const hits=ray.intersectObjects(actors.map(a=>a.hit),false);if(hits.length){const p=hits[0].object.userData.employee;showProfile(p)}}
+let pointerDown=null,dragging=false,lastX=0,lastY=0;
+canvas.addEventListener("pointerdown",e=>{
+ if(e.pointerType==="mouse"&&e.button!==0)return;
+ pointerDown={x:e.clientX,y:e.clientY};dragging=false;lastX=e.clientX;lastY=e.clientY;
+ canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener("pointermove",e=>{
+ if(!pointerDown)return;
+ const total=Math.hypot(e.clientX-pointerDown.x,e.clientY-pointerDown.y);
+ if(total>6)dragging=true;
+ if(dragging){angle+=(e.clientX-lastX)*.008;lastX=e.clientX;lastY=e.clientY;placeCamera()}
+});
+canvas.addEventListener("pointerup",e=>{
+ if(!pointerDown)return;
+ const shouldPick=!dragging&&Math.hypot(e.clientX-pointerDown.x,e.clientY-pointerDown.y)<=10;
+ pointerDown=null;dragging=false;
+ if(shouldPick)pick(e);
+ if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);
+});
+canvas.addEventListener("pointercancel",()=>{pointerDown=null;dragging=false;});
+function resize(){renderer.setSize(canvas.clientWidth,canvas.clientHeight,false);placeCamera()}window.addEventListener("resize",resize);document.getElementById("zin").onclick=()=>{zoom=Math.min(1.8,zoom+.12);placeCamera()};document.getElementById("zout").onclick=()=>{zoom=Math.max(.65,zoom-.12);placeCamera()};document.getElementById("reset").onclick=()=>{angle=0;zoom=1;target.set(0,0,0);placeCamera()};
+let tick=0;function animate(){requestAnimationFrame(animate);tick+=.025;actors.forEach((a,i)=>{const phase=tick*1.35+i*.82,step=Math.sin(phase);a.g.position.y=.015+Math.abs(Math.sin(phase*1.4))*.035;if(i%4===1||i%4===3){a.g.position.x=a.baseX+Math.sin(phase*.55)*.55;a.g.position.z=a.baseZ+Math.cos(phase*.55)*.32;a.g.rotation.y=Math.atan2(Math.cos(phase*.55)*.32,-Math.sin(phase*.55)*.55);a.leg1.rotation.x=step*.48;a.leg2.rotation.x=-step*.48;a.arm1.rotation.x=-step*.24;a.arm2.rotation.x=step*.24;}else if(i%4===0){a.arm1.rotation.x=.72+Math.sin(phase*3)*.12;a.arm2.rotation.x=.72+Math.sin(phase*3+1)*.12;a.arm1.rotation.z=-.08+Math.sin(phase*2)*.06;a.arm2.rotation.z=.08-Math.sin(phase*2)*.06;a.head.rotation.x=.06+Math.sin(phase*1.2)*.04;}else{a.arm1.rotation.x=.16+Math.sin(phase*1.8)*.12;a.arm2.rotation.x=.16+Math.sin(phase*1.8+1)*.12;a.head.rotation.x=Math.sin(phase*.7)*.08;a.leg1.rotation.x=0;a.leg2.rotation.x=0;}a.halo.material.opacity=.45+.25*Math.sin(tick*2+i)});renderer.render(scene,camera)}resize();animate();
+const tasksKey="hcw_ceo_task_register_v1";
+const apiBase="https://human-capital-workspace-ai.bilalteuku17.workers.dev";
+let localTasks=[];let remoteTasks=[];let apiKey=sessionStorage.getItem("hcw_api_key")||"";let apiConnected=false;
+try{localTasks=JSON.parse(localStorage.getItem(tasksKey)||"[]");if(!Array.isArray(localTasks))localTasks=[]}catch(e){localTasks=[]}
+const taskListEl=document.getElementById("taskList");
+const apiModal=document.getElementById("apiModal");
+const modal=document.getElementById("taskModal");
+function openTask(person){modal.classList.add("open");document.getElementById("taskOwner").value=person?String(person.id):"all"}
+const apiConnectionStatus=document.getElementById("apiConnectionStatus");
+function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function statusLabel(status){return ({queued:"ANTRE",assigned:"DITUGASKAN",in_progress:"SEDANG DIKERJAKAN",review:"MENUNGGU REVIEW",completed:"SELESAI",blocked:"TERBLOKIR",cancelled:"DIBATALKAN"})[status]||String(status||"TIDAK DIKETAHUI").toUpperCase()}
+function setApiStatus(message,isError){if(apiConnectionStatus){apiConnectionStatus.textContent="Task API: "+message;apiConnectionStatus.style.color=isError?"#ff9b9b":"#9eb1c8"}}
+function renderTasks(){
+  document.getElementById("taskCount").textContent=String(localTasks.length+(apiConnected?remoteTasks.length:0)).padStart(2,"0");
+  if(!taskListEl)return;
+  const visible=apiConnected?remoteTasks:localTasks;
+  let output="";
+  if(apiConnected&&localTasks.length)output+='<div class="sub" style="padding:8px 0;color:#f0c36d">Ada '+localTasks.length+' tugas lama yang masih tersimpan lokal dan belum disalin ke D1. Tugas tersebut tidak hilang, tetapi belum terlihat di perangkat lain.</div>';
+  if(!visible.length)output+='<div class="sub">'+(apiConnected?"Belum ada tugas di database D1.":"Belum ada instruksi di browser ini.")+'</div>';
+  else output+=visible.slice().reverse().map(t=>{
+    const isRemote=apiConnected;
+    const owner=isRemote?(team.find(p=>p.id===Number(t.owner_id))?.name||"Belum ditentukan"):(t.ownerName||"Seluruh tim");
+    const created=t.created_at||t.created;
+    const date=created?new Date(created).toLocaleString("id-ID"):"Waktu tidak tersedia";
+    const status=isRemote?statusLabel(t.status):"LOKAL · BELUM DISINKRONKAN";
+    const runButton=isRemote&&["queued","assigned","blocked"].includes(t.status)?'<button class="secondary" data-run-id="'+escapeHtml(t.id)+'">Jalankan AI</button>':"";
+    const result=t.result?'<details class="task-result"><summary>Lihat hasil AI</summary><pre>'+escapeHtml(t.result)+'</pre></details>':"";
+    const error=t.error?'<div class="sub" style="color:#ff9b9b;margin-top:6px">Error: '+escapeHtml(t.error)+'</div>':"";
+    return '<div class="task"><strong>'+escapeHtml(t.title)+'</strong><small>'+escapeHtml(owner)+' · '+escapeHtml(date)+'</small><div class="tag">'+escapeHtml(status)+'</div>'+error+result+runButton+'</div>';
+  }).join("");
+  taskListEl.innerHTML=output;
+}
+async function apiRequest(path,options){
+  const config=options||{};
+  const headers=Object.assign({},config.headers||{},{"x-hcw-key":apiKey});
+  if(config.body)headers["content-type"]="application/json";
+  const response=await fetch(apiBase+path,Object.assign({},config,{headers,cache:"no-store"}));
+  let data={};try{data=await response.json()}catch(e){}
+  if(!response.ok)throw new Error(data.message||data.detail||data.error||("HTTP "+response.status));
+  return data;
+}
+async function loadRemoteTasks(){
+  const data=await apiRequest("/api/tasks",{method:"GET"});
+  remoteTasks=Array.isArray(data.tasks)?data.tasks:[];
+  apiConnected=true;setApiStatus("terhubung ke D1 · "+remoteTasks.length+" tugas",false);renderTasks();
+}
+async function runRemoteTask(id,button){
+  if(button){button.disabled=true;button.textContent="Menjalankan..."}
+  try{
+    const data=await apiRequest("/api/tasks/"+encodeURIComponent(id)+"/run",{method:"POST"});
+    if(data.task){const index=remoteTasks.findIndex(t=>t.id===data.task.id);if(index>=0)remoteTasks[index]=data.task;else remoteTasks.unshift(data.task)}
+    setApiStatus("terhubung · eksekusi task selesai",false);renderTasks();
+  }catch(error){
+    setApiStatus("eksekusi gagal: "+error.message,true);
+    if(button){button.disabled=false;button.textContent="Coba lagi"}
+    alert("Task belum berhasil dijalankan: "+error.message);
+  }
+}
+taskListEl.addEventListener("click",event=>{
+  const button=event.target.closest("[data-run-id]");
+  if(button)runRemoteTask(button.getAttribute("data-run-id"),button);
+});
+function openApiModal(){document.getElementById("apiKeyInput").value=apiKey;apiModal.classList.add("open")}
+document.getElementById("apiConnectButton").onclick=openApiModal;
+document.getElementById("apiCancel").onclick=()=>apiModal.classList.remove("open");
+document.getElementById("apiSave").onclick=async()=>{
+  const candidate=document.getElementById("apiKeyInput").value.trim();
+  if(!candidate){setApiStatus("masukkan API key terlebih dahulu",true);return}
+  apiKey=candidate;
+  try{
+    const data=await apiRequest("/api/tasks",{method:"GET"});
+    sessionStorage.setItem("hcw_api_key",candidate);
+    remoteTasks=Array.isArray(data.tasks)?data.tasks:[];
+    apiConnected=true;apiModal.classList.remove("open");
+    setApiStatus("terhubung ke D1 · "+remoteTasks.length+" tugas",false);renderTasks();
+  }catch(error){
+    apiKey="";sessionStorage.removeItem("hcw_api_key");
+    setApiStatus("gagal terhubung: "+error.message,true);
+  }
+};
+document.getElementById("apiDisconnect").onclick=()=>{
+  apiKey="";apiConnected=false;remoteTasks=[];sessionStorage.removeItem("hcw_api_key");
+  document.getElementById("apiKeyInput").value="";apiModal.classList.remove("open");
+  setApiStatus("terputus · daftar lokal ditampilkan",false);renderTasks();
+};
+document.getElementById("newTask").onclick=()=>openTask(null);
+document.getElementById("assignOne").onclick=()=>openTask(selected);
+document.getElementById("closeProfile").onclick=()=>document.getElementById("profile").classList.remove("show");
+document.getElementById("cancelTask").onclick=()=>modal.classList.remove("open");
+document.getElementById("saveTask").onclick=async()=>{
+  const title=document.getElementById("taskTitle").value.trim();
+  const desc=document.getElementById("taskDesc").value.trim();
+  const owner=document.getElementById("taskOwner").value;
+  if(!title||!desc){alert("Isi judul dan instruksi terlebih dahulu.");return}
+  if(apiConnected){
+    const button=document.getElementById("saveTask");button.disabled=true;button.textContent="Menyimpan...";
+    try{
+      const data=await apiRequest("/api/tasks",{method:"POST",body:JSON.stringify({title,description:desc,owner_id:owner==="all"?null:Number(owner)})});
+      if(data.task)remoteTasks.unshift(data.task);
+      setApiStatus("tugas tersimpan di D1",false);
+    }catch(error){
+      setApiStatus("gagal menyimpan: "+error.message,true);
+      alert("Tugas belum tersimpan ke D1: "+error.message);
+      button.disabled=false;button.textContent="Simpan instruksi";return;
+    }
+    button.disabled=false;button.textContent="Simpan instruksi";
+  }else{
+    const person=team.find(x=>String(x.id)===owner);
+    localTasks.push({id:Date.now(),title,desc,owner,ownerName:person?person.name:"Seluruh tim",created:new Date().toISOString(),status:"queued"});
+    try{localStorage.setItem(tasksKey,JSON.stringify(localTasks))}catch(e){alert("Penyimpanan lokal browser tidak tersedia.");return}
+  }
+  document.getElementById("taskTitle").value="";document.getElementById("taskDesc").value="";
+  modal.classList.remove("open");renderTasks();
+};
 renderTasks();
-document.querySelector('#viewProfile').onclick=()=>toast('Profil dasar prototype · Detail jabatan menyusul');
-const list=document.querySelector('#employeeList');
-employees.forEach((e,i)=>{const b=document.createElement('button');b.className='emp';b.innerHTML=`<span class="avatar">${e.emoji}</span><span style="min-width:0"><b>${e.name}</b><small><i class="status online"></i>Available · ${e.room}</small></span>`;b.onclick=()=>openProfile(e);list.appendChild(b)});
-let toastTimer;function toast(t){const el=document.querySelector('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2100)}
-function animate(t){requestAnimationFrame(animate);people.forEach((p,i)=>{p.position.y=Math.sin(t*.0015+i)*.012});renderer.render(scene,camera)}
-requestAnimationFrame(animate);
+if(apiKey){
+  loadRemoteTasks().catch(error=>{
+    apiConnected=false;apiKey="";sessionStorage.removeItem("hcw_api_key");
+    setApiStatus("key tersimpan tidak dapat digunakan: "+error.message,true);renderTasks();
+  });
+}else{
+  setApiStatus("belum terhubung · tugas baru disimpan lokal",false);
+}renderTasks();
+
+const systemHealth=document.getElementById("systemHealth");
+const healthUrl="https://human-capital-workspace-ai.bilalteuku17.workers.dev/health";
+async function refreshSystemHealth(){
+  if(!systemHealth)return;
+  try{
+    const response=await fetch(healthUrl,{cache:"no-store"});
+    if(!response.ok)throw new Error("HTTP "+response.status);
+    const health=await response.json();
+    const worker=health.status==="online"?"ONLINE":"NOT ONLINE";
+    const database=health.database==="connected"?"TERHUBUNG":String(health.database||"TIDAK DIKETAHUI").toUpperCase();
+    const auth=health.api_auth==="configured"?"TERKONFIGURASI":"BELUM DIKONFIGURASI";
+    const ai=health.ai_engine==="binding_ready"?"BINDING TERSEDIA · INFERENSI BELUM DIUJI":"BELUM DIKONFIGURASI";
+    systemHealth.textContent=[
+      "Cloudflare Worker: "+worker,
+      "Database D1: "+database,
+      "Autentikasi API: "+auth,
+      "AI Engine: "+ai,
+      "Pemeriksaan: "+new Date().toLocaleTimeString("id-ID")
+    ].join("\n");
+  }catch(error){
+    systemHealth.textContent="Status backend belum dapat diambil dari perangkat ini. Task Register tetap tersimpan lokal.";
+  }
+}
+refreshSystemHealth();
+setInterval(refreshSystemHealth,60000);
+})();
 </script>
-</body>
-</html>
+</body></html>

@@ -1,29 +1,38 @@
 # HUMAN CAPITAL WORKSPACE
 
-AI Virtual Office — CEO Workspace.
+GitHub Pages preview mirror for the canonical project repository.
 
-## Current milestone
+- **Live preview:** https://bilalteuku17.github.io/human-capital-workspace/
+- **Canonical source repository:** https://github.com/bilalteuku17/bilal-ai-content-studio
+- **Frontend:** `index.html` is mirrored from the canonical repository.
+- **Production backend:** Cloudflare Worker `human-capital-workspace-ai`, deployed from `worker/` in the canonical repository.
+- **Database:** Cloudflare D1 `human-capital-workspace-db`.
 
-- 3D isometric office prototype hosted on GitHub Pages.
-- Eight selectable AI Employee placeholders.
-- CEO task register currently stores tasks in the browser's local storage.
-- AI execution backend source is prepared in `worker/index.js`; it is not live until deployed and configured in Cloudflare.
+## Current status (19 November 2026)
 
-## Milestone 3 — AI Execution Engine setup
+The canonical repository has the newer Task Register integration. The UI can use browser-local storage or connect to the authenticated D1 task API. The backend exposes:
 
-The Worker source is in `worker/index.js`. It exposes:
-- `GET /health` — service health check.
-- `POST /api/execute` — runs a task using a Cloudflare Workers AI binding.
+- `GET /health` — public read-only Worker, D1, and AI-binding status.
+- `GET /api/tasks` — list tasks.
+- `POST /api/tasks` — create a task.
+- `GET /api/tasks/{id}` — read one task.
+- `POST /api/tasks/{id}/run` — request an AI draft.
 
-Required Cloudflare Worker configuration:
-1. Create a Worker and paste the contents of `worker/index.js`.
-2. Add a Workers AI binding named `AI`.
-3. Add a Worker secret named `HCW_API_TOKEN` with a strong, unique value.
-4. Deploy the Worker and test `/health`.
-5. Keep the token private. Never commit it to this repository or share it in screenshots/chat.
+Protected endpoints require the `x-hcw-key` header. The latest recorded Worker deployment succeeded on 18 November 2026; its workflow verified D1 as connected and the Workers AI binding as available. However, the `HCW_API_KEY` repository secret was absent, so authenticated API testing was skipped. Model inference has not yet been smoke-tested. Do not treat the API-connected UI path as verified until an authenticated task has been created, executed, and read back from D1.
 
-The browser UI is not yet connected to this Worker. Task execution is not active until the backend is deployed and a secure connection flow is added.
+The eight office characters remain visual placeholders, not autonomous AI employees.
 
-## Important data note
+## Activation and security
 
-Until a server database is configured, task records remain in the local browser profile where they were created. Clearing browser site data or switching devices may remove or hide those records.
+1. Generate a strong random secret for `HCW_API_KEY`.
+2. Add it under **Settings → Secrets and variables → Actions** in the canonical repository.
+3. Run the **Deploy HUMAN CAPITAL WORKSPACE API** workflow so the secret is synchronized to the Cloudflare Worker.
+4. On a trusted private device, use **Hubungkan Task API** in the preview and enter the same key.
+
+Do not commit the secret or paste it into chat. The browser currently holds the entered key in `sessionStorage` for the current tab; this is a temporary single-owner MVP bridge, not production multi-user authentication.
+
+Tasks created before connecting remain in that browser's local storage and are not automatically migrated to D1.
+
+## Source of truth
+
+The Cloudflare Worker deployment workflow and D1 migrations are maintained in the canonical repository. The `worker/index.js` file in this preview repository is a reference mirror only; GitHub Pages does not deploy it.
