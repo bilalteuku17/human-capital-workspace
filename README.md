@@ -14,7 +14,7 @@ The canonical repository has the newer Task Register integration. The UI can use
 
 - `GET /health` — public read-only Worker, D1, and AI-binding status.
 - `GET /api/tasks` — list tasks.
-- `POST /api/tasks` — create a task.
+- `POST /api/tasks` — create a task; optional `client_id` makes retries idempotent for safe local-task imports.
 - `GET /api/tasks/{id}` — read one task.
 - `POST /api/tasks/{id}/run` — request an AI draft.
 
@@ -31,7 +31,7 @@ The eight office avatars now have defined HC functional roles and role-specific 
 
 Do not commit the secret or paste it into chat. The browser currently holds the entered key in `sessionStorage` for the current tab; this is a temporary single-owner MVP bridge, not production multi-user authentication.
 
-Tasks created before connecting remain in that browser's local storage and are not automatically migrated to D1.
+Tasks created before connecting remain in that browser's local storage until the user chooses **Impor tugas lokal ke D1** after connecting. Each acknowledged task is removed from local storage. The API uses its stable local ID as an idempotency key, so a retry with the same content does not create a duplicate.
 
 ## Source of truth
 
