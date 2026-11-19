@@ -11,6 +11,27 @@ const json = (data, status = 200) => new Response(JSON.stringify(data), {
 
 const AI_MODEL = "@cf/zai-org/glm-4.7-flash";
 
+const AGENT_PROFILES = {
+  1: { name: "HC Strategy & PMO", mandate: "Menerjemahkan arahan CEO menjadi prioritas, roadmap, business brief, opsi keputusan, dan koordinasi lintas fungsi Human Capital.", expertise: "Strategi HC, perencanaan program, tata kelola proyek, business case, executive reporting, dan manajemen risiko." },
+  2: { name: "Organization Development & Workforce", mandate: "Merancang organisasi, struktur dan jabatan, job description, kompetensi, proses kerja, SOP, serta analisis beban kerja dan kebutuhan manpower.", expertise: "Organization design, job architecture, competency management, WLA/FTE, workforce planning, process improvement, dan produktivitas organisasi." },
+  3: { name: "Talent Acquisition", mandate: "Menyusun strategi pemenuhan tenaga kerja dari requisition sampai seleksi, termasuk prioritas hiring, sourcing, interview, dan monitoring pipeline.", expertise: "Manpower requisition, recruitment funnel, sourcing, selection, interview guide, hiring plan, recruitment SLA, dan recruitment analytics." },
+  4: { name: "Talent Management & Succession", mandate: "Menyusun pendekatan pengelolaan talenta, talent review, succession, career path, IDP, dan pengembangan pipeline pemimpin.", expertise: "Talent mapping, performance-potential review, succession planning, career management, IDP, retention, dan leadership development." },
+  5: { name: "Learning & Development", mandate: "Menyusun kebutuhan dan solusi pembelajaran yang relevan dengan pekerjaan, standar kompetensi, dan dampak bisnis.", expertise: "TNA, learning curriculum, training design, OJT, coaching, mentoring, learning evaluation, LMS, dan learning analytics." },
+  6: { name: "Performance Management", mandate: "Membangun sistem sasaran dan pengukuran kinerja yang terhubung dengan prioritas bisnis, termasuk KPI, appraisal, dan tindak lanjut kinerja.", expertise: "KPI cascading, scorecard, target setting, weighting, performance appraisal, calibration, performance improvement, dan governance." },
+  7: { name: "HRIS & Process Automation", mandate: "Menerjemahkan kebutuhan proses HC menjadi spesifikasi sistem, workflow, model data, integrasi, dan otomasi yang aman serta dapat dipelihara.", expertise: "HRIS requirements, process mapping, workflow design, data governance, access control, Google Workspace automation, API integration, dan system documentation." },
+  8: { name: "People Analytics & Engagement", mandate: "Mengolah data tenaga kerja dan masukan karyawan menjadi insight, dashboard, prioritas engagement, serta rekomendasi perbaikan pengalaman karyawan.", expertise: "People analytics, workforce dashboard, headcount, productivity, engagement survey, attrition analysis, employee experience, dan employer branding metrics." }
+};
+
+const DEFAULT_AGENT = {
+  name: "Koordinator HC Lintas Fungsi",
+  mandate: "Menyusun output terintegrasi lintas fungsi Human Capital, mengidentifikasi kontribusi fungsi yang relevan, dan menyajikan rekomendasi konsolidasi kepada CEO.",
+  expertise: "HC strategy, cross-functional coordination, prioritization, executive synthesis, and risk review."
+};
+
+function getAgentProfile(ownerId) {
+  return ownerId == null ? DEFAULT_AGENT : (AGENT_PROFILES[ownerId] || DEFAULT_AGENT);
+}
+
 function authorized(request, env) {
   const configured = env.HCW_API_KEY;
   return Boolean(configured && request.headers.get("x-hcw-key") === configured);
@@ -52,6 +73,8 @@ export default {
         api_auth: env.HCW_API_KEY ? "configured" : "not_configured",
         ai_engine: env.AI ? "binding_ready" : "not_configured",
         ai_model: env.AI ? AI_MODEL : null,
+        agent_profiles: Object.keys(AGENT_PROFILES).length,
+        ai_task_mode: "role_based_per_task",
         note: "Workers AI binding is available; model inference has not yet been smoke-tested. Task execution requires API authentication."
       });
     }
@@ -79,7 +102,7 @@ export default {
       const ownerId = body.owner_id == null || body.owner_id === "" ? null : Number(body.owner_id);
       if (!title || !description) return json({ error: "title and description are required." }, 400);
       if (title.length > 180 || description.length > 12000) return json({ error: "Input exceeds allowed length." }, 400);
-      if (ownerId !== null && !Number.isInteger(ownerId)) return json({ error: "owner_id must be an integer or null." }, 400);
+      if (ownerId !== null && (!Number.isInteger(ownerId) || ownerId < 1 || ownerId > 8)) return json({ error: "owner_id must be an integer from 1 to 8, or null for the cross-functional coordinator." }, 400);
       const id = crypto.randomUUID();
       await env.DB.prepare(
         "INSERT INTO tasks (id, title, description, owner_id, status) VALUES (?, ?, ?, ?, 'queued')"
@@ -112,14 +135,15 @@ export default {
       }
 
       try {
+        const agent = getAgentProfile(task.owner_id);
         const messages = [
           {
             role: "system",
-            content: "Anda adalah AI Employee di HUMAN CAPITAL WORKSPACE. Buat hasil kerja/draf berdasarkan instruksi dan informasi yang benar-benar tersedia. Anda tidak memiliki akses ke sistem perusahaan, file, internet, email, atau alat eksternal. Jangan mengaku telah mengirim pesan, mengubah data, menghubungi orang, atau memverifikasi fakta. Jika data penting tidak tersedia, tandai asumsi dan kebutuhan data secara jelas. Jawab dalam Bahasa Indonesia kecuali instruksi meminta bahasa lain. Berikan output yang konkret, terstruktur, dan siap ditinjau manusia."
+            content: "Anda adalah " + agent.name + ", AI Employee berbasis peran di HUMAN CAPITAL WORKSPACE.\n\nMandat: " + agent.mandate + "\n\nKeahlian: " + agent.expertise + "\n\nBuat hasil kerja/draf sesuai mandat peran dan instruksi CEO. Jika tugas berada di luar mandat, jelaskan batasnya dan sarankan fungsi yang relevan. Anda tidak memiliki akses ke sistem perusahaan, file, internet, email, atau alat eksternal. Jangan mengaku telah mengirim pesan, mengubah data, menghubungi orang, atau memverifikasi fakta. Jika data penting tidak tersedia, tandai asumsi dan kebutuhan data secara jelas. Jawab dalam Bahasa Indonesia kecuali instruksi meminta bahasa lain. Berikan output konkret, terstruktur, dan siap ditinjau manusia."
           },
           {
             role: "user",
-            content: "JUDUL TUGAS:\n" + task.title + "\n\nINSTRUKSI CEO:\n" + task.description + "\n\nPIC ID: " + (task.owner_id ?? "Belum ditentukan") + "\n\nBuat hasil kerja terbaik yang dapat disusun dari informasi di atas. Pisahkan fakta, asumsi, dan hal yang perlu dikonfirmasi."
+            content: "PERAN PIC: " + agent.name + "\nMANDAT: " + agent.mandate + "\n\nJUDUL TUGAS:\n" + task.title + "\n\nINSTRUKSI CEO:\n" + task.description + "\n\nPIC ID: " + (task.owner_id ?? "Koordinator lintas fungsi") + "\n\nBuat hasil kerja terbaik yang dapat disusun dari informasi di atas. Pisahkan fakta, asumsi, rekomendasi, dan hal yang perlu dikonfirmasi."
           }
         ];
         const completion = await env.AI.run(AI_MODEL, {

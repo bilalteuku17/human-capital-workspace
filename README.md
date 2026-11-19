@@ -10,7 +10,7 @@ GitHub Pages preview mirror for the canonical project repository.
 
 ## Current status (19 November 2026)
 
-The canonical repository has the newer Task Register integration. The UI can use browser-local storage or connect to the authenticated D1 task API. The backend exposes:
+The canonical repository has the newer Task Register integration. The UI can use browser-local storage or connect to the authenticated D1 task API. Each PIC has a defined HC role; AI task execution uses a matching role-specific prompt. The backend exposes:
 
 - `GET /health` — public read-only Worker, D1, and AI-binding status.
 - `GET /api/tasks` — list tasks.
@@ -20,7 +20,7 @@ The canonical repository has the newer Task Register integration. The UI can use
 
 Protected endpoints require the `x-hcw-key` header. The latest recorded Worker deployment succeeded on 18 November 2026; its workflow verified D1 as connected and the Workers AI binding as available. However, the `HCW_API_KEY` repository secret was absent, so authenticated API testing was skipped. Model inference has not yet been smoke-tested. Do not treat the API-connected UI path as verified until an authenticated task has been created, executed, and read back from D1.
 
-The eight office characters remain visual placeholders, not autonomous AI employees.
+The eight office avatars now have defined HC functional roles and role-specific task prompts. A task assigned to one PIC uses that role's prompt; selecting the whole team uses one cross-functional coordinator prompt. This is still request-driven single-model execution, not eight autonomous agents or background workers.
 
 ## Activation and security
 
