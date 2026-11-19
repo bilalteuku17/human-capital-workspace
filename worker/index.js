@@ -37,6 +37,14 @@ function authorized(request, env) {
   return Boolean(configured && request.headers.get("x-hcw-key") === configured);
 }
 
+function decodeTaskId(value) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return null;
+  }
+}
+
 function taskSelectSql() {
   return "SELECT id, title, description, owner_id, status, result, error, ai_model, attempt_count, started_at, completed_at, created_at, updated_at FROM tasks";
 }
@@ -97,22 +105,37 @@ export default {
     if (url.pathname === "/api/tasks" && request.method === "POST") {
       let body;
       try { body = await request.json(); } catch { return json({ error: "Invalid JSON body." }, 400); }
+      if (!body || typeof body !== "object" || Array.isArray(body)) {
+        return json({ error: "JSON body must be an object." }, 400);
+      }
       const title = String(body.title || "").trim();
       const description = String(body.description || "").trim();
       const ownerId = body.owner_id == null || body.owner_id === "" ? null : Number(body.owner_id);
       if (!title || !description) return json({ error: "title and description are required." }, 400);
       if (title.length > 180 || description.length > 12000) return json({ error: "Input exceeds allowed length." }, 400);
       if (ownerId !== null && (!Number.isInteger(ownerId) || ownerId < 1 || ownerId > 8)) return json({ error: "owner_id must be an integer from 1 to 8, or null for the cross-functional coordinator." }, 400);
-      const id = crypto.randomUUID();
-      await env.DB.prepare(
-        "INSERT INTO tasks (id, title, description, owner_id, status) VALUES (?, ?, ?, ?, 'queued')"
+      const clientId = body.client_id == null || body.client_id === "" ? null : String(body.client_id).trim();
+      if (clientId && !/^[A-Za-z0-9_-]{1,80}$/.test(clientId)) {
+        return json({ error: "client_id may contain only letters, numbers, underscores, and hyphens (max 80 characters)." }, 400);
+      }
+      const id = clientId || crypto.randomUUID();
+      const inserted = await env.DB.prepare(
+        "INSERT OR IGNORE INTO tasks (id, title, description, owner_id, status) VALUES (?, ?, ?, ?, 'queued')"
       ).bind(id, title, description, ownerId).run();
-      return json({ task: { id, title, description, owner_id: ownerId, status: "queued" } }, 201);
+      const task = await env.DB.prepare(taskSelectSql() + " WHERE id = ? LIMIT 1").bind(id).first();
+      if (!task) return json({ error: "Task could not be read after creation." }, 500);
+      const samePayload = task.title === title &&
+        task.description === description &&
+        Number(task.owner_id ?? 0) === Number(ownerId ?? 0);
+      if (!samePayload) return json({ error: "client_id is already used by a different task." }, 409);
+      const created = Number(inserted?.meta?.changes || 0) === 1;
+      return json({ task, duplicate: !created }, created ? 201 : 200);
     }
 
     const taskMatch = url.pathname.match(/^\/api\/tasks\/([^/]+)$/);
     if (taskMatch && request.method === "GET") {
-      const id = decodeURIComponent(taskMatch[1]);
+      const id = decodeTaskId(taskMatch[1]);
+      if (id === null) return json({ error: "Invalid task ID encoding." }, 400);
       const task = await env.DB.prepare(taskSelectSql() + " WHERE id = ? LIMIT 1").bind(id).first();
       return task ? json({ task }) : json({ error: "Task not found." }, 404);
     }
@@ -120,7 +143,8 @@ export default {
     const runMatch = url.pathname.match(/^\/api\/tasks\/([^/]+)\/run$/);
     if (runMatch && request.method === "POST") {
       if (!env.AI) return json({ error: "Workers AI binding is unavailable." }, 503);
-      const id = decodeURIComponent(runMatch[1]);
+      const id = decodeTaskId(runMatch[1]);
+      if (id === null) return json({ error: "Invalid task ID encoding." }, 400);
       const task = await env.DB.prepare(taskSelectSql() + " WHERE id = ? LIMIT 1").bind(id).first();
       if (!task) return json({ error: "Task not found." }, 404);
       if (!["queued", "assigned", "blocked"].includes(task.status)) {
