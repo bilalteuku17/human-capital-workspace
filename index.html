@@ -129,7 +129,7 @@ function renderTasks(){
   if(!taskListEl)return;
   const visible=apiConnected?remoteTasks:localTasks;
   let output="";
-  if(apiConnected&&localTasks.length)output+='<div class="sub" style="padding:8px 0;color:#f0c36d">Ada '+localTasks.length+' tugas lama yang masih tersimpan lokal dan belum disalin ke D1. Tugas tersebut tidak hilang, tetapi belum terlihat di perangkat lain.</div>';
+  if(apiConnected&&localTasks.length)output+='<div class="sub" style="padding:8px 0;color:#f0c36d">Ada '+localTasks.length+' tugas lama yang masih tersimpan lokal dan belum disalin ke D1. <button class="secondary" data-import-local style="margin-top:7px">Impor '+localTasks.length+' tugas lokal ke D1</button></div>';
   if(!visible.length)output+='<div class="sub">'+(apiConnected?"Belum ada tugas di database D1.":"Belum ada instruksi di browser ini.")+'</div>';
   else output+=visible.slice().reverse().map(t=>{
     const isRemote=apiConnected;
@@ -170,7 +170,40 @@ async function runRemoteTask(id,button){
     alert("Task belum berhasil dijalankan: "+error.message);
   }
 }
+async function importLocalTasks(button){
+  if(!apiConnected||!localTasks.length)return;
+  button.disabled=true;button.textContent="Mengimpor tugas...";
+  let imported=0;
+  try{
+    while(localTasks.length){
+      const local=localTasks[0];
+      const title=String(local.title??"").trim();
+      const description=String(local.desc??local.description??"").trim();
+      const rawOwner=local.owner;
+      const ownerId=rawOwner==null||rawOwner===""||rawOwner==="all"?null:Number(rawOwner);
+      const clientId=String(local.id??"").trim();
+      if(!title||!description)throw new Error("Tugas lokal teratas tidak memiliki judul atau instruksi lengkap.");
+      if(!clientId)throw new Error("Tugas lokal tidak memiliki ID stabil; tugas ini perlu diperiksa manual.");
+      if(ownerId!==null&&(!Number.isInteger(ownerId)||ownerId<1||ownerId>8))throw new Error("PIC pada salah satu tugas lokal tidak valid.");
+      const data=await apiRequest("/api/tasks",{method:"POST",body:JSON.stringify({
+        title,description,owner_id:ownerId,client_id:clientId
+      })});
+      if(data.task&&!remoteTasks.some(task=>task.id===data.task.id))remoteTasks.unshift(data.task);
+      localTasks.shift();
+      localStorage.setItem(tasksKey,JSON.stringify(localTasks));
+      imported++;
+    }
+    setApiStatus(imported+" tugas lokal berhasil diimpor ke D1",false);
+  }catch(error){
+    setApiStatus(imported+" tugas diimpor; proses berhenti: "+error.message,true);
+    alert(imported+" tugas berhasil diimpor. Tugas berikutnya tetap tersimpan lokal. Periksa pesan error sebelum mencoba lagi: "+error.message);
+  }finally{
+    renderTasks();
+  }
+}
 taskListEl.addEventListener("click",event=>{
+  const importButton=event.target.closest("[data-import-local]");
+  if(importButton){importLocalTasks(importButton);return}
   const button=event.target.closest("[data-run-id]");
   if(button)runRemoteTask(button.getAttribute("data-run-id"),button);
 });
@@ -220,7 +253,8 @@ document.getElementById("saveTask").onclick=async()=>{
     button.disabled=false;button.textContent="Simpan instruksi";
   }else{
     const person=team.find(x=>String(x.id)===owner);
-    localTasks.push({id:Date.now(),title,desc,owner,ownerName:person?person.name:"Seluruh tim",created:new Date().toISOString(),status:"queued"});
+    const localId=crypto.randomUUID?crypto.randomUUID():String(Date.now())+"-"+Math.random().toString(36).slice(2,10);
+    localTasks.push({id:localId,title,desc,owner,ownerName:person?person.name:"Seluruh tim",created:new Date().toISOString(),status:"queued"});
     try{localStorage.setItem(tasksKey,JSON.stringify(localTasks))}catch(e){alert("Penyimpanan lokal browser tidak tersedia.");return}
   }
   document.getElementById("taskTitle").value="";document.getElementById("taskDesc").value="";
